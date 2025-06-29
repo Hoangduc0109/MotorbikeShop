@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+
+actor "Admin" as Admin
+
+rectangle "Trang chủ Admin" {
+    usecase "Xem tổng quan hệ thống" as UC_Overview
+    usecase "Xem số lượng đơn hàng" as UC_ViewOrderCount
+    usecase "Xem số lượng sản phẩm" as UC_ViewProductCount
+    usecase "Xem số lượng khách hàng" as UC_ViewCustomerCount
+    usecase "Xem đơn hàng gần đây" as UC_ViewRecentOrders
+    usecase "Xem chi tiết đơn hàng" as UC_ViewOrderDetails
+    usecase "Sửa đơn hàng" as UC_EditOrder
+    usecase "Xem liên hệ mới" as UC_ViewRecentContacts
+    usecase "Xem chi tiết liên hệ" as UC_ViewContactDetails
+    usecase "Trả lời liên hệ" as UC_RespondContact
+    usecase "Chuyển đến quản lý đơn hàng" as UC_GotoOrderManagement
+    usecase "Chuyển đến quản lý liên hệ" as UC_GotoContactManagement
+}
+
+Admin --> UC_Overview
+UC_Overview --> UC_ViewOrderCount
+UC_Overview --> UC_ViewProductCount
+UC_Overview --> UC_ViewCustomerCount
+UC_Overview --> UC_ViewRecentOrders
+UC_Overview --> UC_ViewRecentContacts
+
+UC_ViewRecentOrders --> UC_ViewOrderDetails
+UC_ViewRecentOrders --> UC_EditOrder
+UC_ViewRecentOrders --> UC_GotoOrderManagement
+
+UC_ViewRecentContacts --> UC_ViewContactDetails
+UC_ViewRecentContacts --> UC_RespondContact
+UC_ViewRecentContacts --> UC_GotoContactManagement
+
+@enduml

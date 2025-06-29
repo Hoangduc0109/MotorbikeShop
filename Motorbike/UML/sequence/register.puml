@@ -1,0 +1,17 @@
+@startuml
+actor "Người dùng" as User
+participant "Register.cshtml (View)" as View
+participant "AccountController" as Controller
+participant "Account (Model)" as Model
+
+User -> View : Nhập thông tin đăng ký
+View -> Controller : Gửi thông tin đăng ký (RegisterViewModel)
+Controller -> Model : Kiểm tra username/email đã tồn tại?
+alt Đã tồn tại
+    Controller -> View : Hiển thị lỗi đăng ký
+else Chưa tồn tại
+    Controller -> Model : Tạo tài khoản mới (Account)
+    Controller -> Model : Lưu tài khoản vào DB
+    Controller -> View : Đăng ký thành công, chuyển hướng trang chủ
+end
+@enduml

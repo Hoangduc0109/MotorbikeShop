@@ -1,0 +1,172 @@
+@model global::Motorbike.Models.Contact
+
+@{
+    ViewData["Title"] = "Chi tiết liên hệ";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Chi tiết liên hệ</h2>
+    <div>
+        <a asp-action="Respond" asp-route-id="@Model.ContactId" class="btn btn-info">
+            <i class="fas fa-reply me-1"></i> Phản hồi
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Thông tin người gửi</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Họ tên:</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">@Model.Name</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Email:</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">@Model.Email</p>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Phone))
+                {
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label fw-bold">Số điện thoại:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">@Model.Phone</p>
+                        </div>
+                    </div>
+                }
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Tài khoản:</label>
+                    <div class="col-sm-9">
+                        @if (Model.Account != null)
+                        {
+                            <a asp-area="Admin" asp-controller="Customer" asp-action="Details" asp-route-id="@Model.AccountId" class="form-control-plaintext text-primary">
+                                @Model.Account.Username (ID: @Model.AccountId)
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="form-control-plaintext text-muted">Khách không đăng nhập</p>
+                        }
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Ngày gửi:</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                    </div>
+                </div>
+                <div class="mb-0 row">
+                    <label class="col-sm-3 col-form-label fw-bold">Trạng thái:</label>
+                    <div class="col-sm-9">
+                        @{
+                            string statusClass = Model.Status switch
+                            {
+                                "Đã xử lý" => "badge bg-success",
+                                "Đang xử lý" => "badge bg-warning text-dark",
+                                "Chưa xử lý" => "badge bg-danger",
+                                _ => "badge bg-secondary"
+                            };
+                        }
+                        <span class="@statusClass">@Model.Status</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-envelope-open-text me-2"></i>Nội dung liên hệ</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="fw-bold">Tiêu đề</h6>
+                    <p>@Model.Subject</p>
+                </div>
+                <div>
+                    <h6 class="fw-bold">Nội dung</h6>
+                    <div class="p-3 bg-light rounded">
+                        <p style="white-space: pre-line;">@Model.Message</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Response))
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-reply me-2"></i>Phản hồi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Nội dung phản hồi</h6>
+                        <div class="p-3 bg-light rounded">
+                            <p style="white-space: pre-line;">@Model.Response</p>
+                        </div>
+                    </div>
+                    @if (Model.ResponseAt.HasValue)
+                    {
+                        <div class="text-muted">
+                            <small>Phản hồi lúc: @Model.ResponseAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Cấu hình toastr
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+                "timeOut": "5000",
+                "extendedTimeOut": "2000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut",
+                "escapeHtml": false
+            };
+
+            // Hiển thị thông báo thành công nếu có
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>toastr.success('@TempData["SuccessMessage"]');</text>
+            }
+
+            // Hiển thị thông báo lỗi nếu có
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>toastr.error('@TempData["ErrorMessage"]');</text>
+            }
+        });
+    </script>
+}

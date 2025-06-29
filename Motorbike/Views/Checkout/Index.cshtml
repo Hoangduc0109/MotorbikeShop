@@ -1,0 +1,177 @@
+@model global::Motorbike.ViewModels.CheckoutViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    ViewData["Title"] = "Thanh toán";
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/checkout.css" asp-append-version="true" />
+}
+
+<div class="container checkout-container mt-5">
+    <h1 class="checkout-title mb-4">Thanh toán</h1>
+
+    <div id="errorMessage" class="custom-alert error" style="display: none;">
+        <div class="d-flex align-items-start">
+            <div class="custom-alert-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="custom-alert-content" id="errorMessageContent">
+            </div>
+        </div>
+    </div>
+    
+    @if (ViewBag.OutOfStockItems != null)
+    {
+        <div class="custom-alert warning">
+            <div class="d-flex align-items-start">
+                <div class="custom-alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="custom-alert-content">
+                    <div class="custom-alert-title">Số lượng sản phẩm vượt quá tồn kho hiện có</div>
+                    <ul>
+                        @foreach (var item in ViewBag.OutOfStockItems as Dictionary<string, int>)
+                        {
+                            <li><strong>@item.Key:</strong> Chỉ còn <span class="badge bg-warning text-dark">@item.Value</span> sản phẩm</li>
+                        }
+                    </ul>
+                    <div class="custom-alert-action">
+                        <a href="@Url.Action("Index", "Cart")">
+                            <i class="fas fa-shopping-cart"></i> Quay lại giỏ hàng và cập nhật số lượng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Thông tin đơn hàng -->
+        <div class="col-lg-7 mb-4">
+            <div class="card order-info-card">
+                <div class="card-header">
+                    <h2 class="section-title">Thông tin đơn hàng</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table order-table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td class="product-image">
+                                        <img src="@(string.IsNullOrEmpty(item.Image) ? "/images/products/default.jpg" : $"/images/products/{item.Image}")"
+                                             alt="@item.MotorbikeName" />
+                                    </td>
+                                    <td class="product-name">@item.MotorbikeName</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@string.Format("{0:N0}", item.Price) VND</td>
+                                    <td>@string.Format("{0:N0}", item.Total) VND</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                <td class="fw-bold total-price">@string.Format("{0:N0}", Model.TotalAmount) VND</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin thanh toán -->
+        <div class="col-lg-5">
+            <div class="card payment-card">
+                <div class="card-header">
+                    <h2 class="section-title">Thông tin thanh toán</h2>
+                </div>
+                <div class="card-body">
+                    <form id="checkoutForm">
+                        <input type="hidden" name="__RequestVerificationToken" value="@token" />
+
+                        <div class="mb-3">
+                            <label for="CustomerName" class="form-label">Họ và tên</label>
+                            <input id="CustomerName" name="CustomerName" class="form-control" placeholder="Nhập họ và tên" value="@Model.CustomerName">
+                            <span class="text-danger field-validation-error" data-valmsg-for="CustomerName"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Address" class="form-label">Địa chỉ giao hàng</label>
+                            <input id="Address" name="Address" class="form-control" placeholder="Nhập địa chỉ giao hàng" value="@Model.Address">
+                            <span class="text-danger field-validation-error" data-valmsg-for="Address"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Phone" class="form-label">Số điện thoại</label>
+                            <input id="Phone" name="Phone" class="form-control" placeholder="Nhập số điện thoại" value="@Model.Phone">
+                            <span class="text-danger field-validation-error" data-valmsg-for="Phone"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Chọn phương thức thanh toán</label>
+                            <div class="payment-methods">
+                                <div class="form-check payment-method-item">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="cod" value="COD" checked>
+                                    <label class="form-check-label" for="cod">
+                                        <span class="payment-icon"><i class="fas fa-money-bill-wave"></i></span>
+                                        <span class="payment-name">Thanh toán khi nhận hàng (COD)</span>
+                                    </label>
+                                </div>
+                                <div class="form-check payment-method-item">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="bank" value="BankTransfer">
+                                    <label class="form-check-label" for="bank">
+                                        <span class="payment-icon"><i class="fas fa-university"></i></span>
+                                        <span class="payment-name">Chuyển khoản ngân hàng</span>
+                                    </label>
+                                </div>
+                                <div class="form-check payment-method-item">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="momo" value="Momo">
+                                    <label class="form-check-label" for="momo">
+                                        <span class="payment-icon"><i class="fas fa-wallet"></i></span>
+                                        <span class="payment-name">Ví điện tử Momo</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <span class="text-danger field-validation-error" data-valmsg-for="PaymentMethod"></span>
+                        </div>
+
+                        <!-- Thông tin chuyển khoản -->
+                        <div class="bank-info" id="bankInfo" style="display: none;">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Thông tin chuyển khoản</h5>
+                                    <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                                    <p><strong>Số tài khoản:</strong> 1234567890</p>
+                                    <p><strong>Chủ tài khoản:</strong> CÔNG TY TNHH BIKESHOP</p>
+                                    <p><strong>Nội dung:</strong> [Mã đơn hàng] - [Họ tên]</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" id="btnPlaceOrder" class="btn btn-place-order">Xác nhận đơn hàng</button>
+                            <a href="@Url.Action("Index", "Cart")" class="btn btn-back-to-cart">Quay lại giỏ hàng</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/checkout.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

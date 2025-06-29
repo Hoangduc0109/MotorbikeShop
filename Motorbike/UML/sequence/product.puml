@@ -1,0 +1,15 @@
+@startuml
+actor "Người dùng" as User
+participant "Product/Index.cshtml (View)" as View
+participant "ProductController" as Controller
+participant "Motorbike (Model)" as Model
+
+User -> View : Truy cập trang danh sách sản phẩm
+View -> Controller : Gửi yêu cầu lấy danh sách (có thể kèm brandId, sortOrder, searchTerm, page)
+Controller -> Model : Lấy danh sách sản phẩm theo điều kiện
+Controller -> Model : Lấy danh sách thương hiệu (Brand)
+Model --> Controller : Trả về danh sách sản phẩm, thương hiệu
+Controller -> View : Trả về dữ liệu cho View
+View -> User : Hiển thị danh sách sản phẩm, bộ lọc, phân trang
+
+@enduml

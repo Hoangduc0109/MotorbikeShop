@@ -1,0 +1,182 @@
+@model global::Motorbike.ViewModels.ProductListViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    ViewData["Title"] = "Sản phẩm";
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/product.css" asp-append-version="true" />
+}
+
+<!-- Banner sản phẩm -->
+<div class="product-banner">
+    <div class="container">
+        <h1>Danh sách sản phẩm</h1>
+        <p>Khám phá các dòng xe máy chất lượng cao từ các thương hiệu hàng đầu</p>
+    </div>
+</div>
+
+<!-- Phần bộ lọc và sắp xếp -->
+<div class="product-filters-section">
+    <div class="container">
+        <div class="row">
+            <!-- Tìm kiếm sản phẩm -->
+            <div class="col-md-12 mb-3">
+                <form method="get" action="@Url.Action("Index", "Product")" class="search-form">
+                    <div class="input-group">
+                        <input type="text" name="searchTerm" class="form-control search-input" placeholder="Tìm kiếm xe máy..." value="@Model.SearchTerm">
+                        <input type="hidden" name="brandId" value="@Model.BrandId" />
+                        <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                        <button type="submit" class="btn search-btn">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bộ lọc thương hiệu -->
+            <div class="col-md-8">
+                <div class="filter-tabs">
+                    <a href="@Url.Action("Index", "Product", new { searchTerm = Model.SearchTerm, sortOrder = Model.SortOrder })" class="filter-tab @(Model.BrandId == 0 ? "active" : "")">
+                        Tất cả thương hiệu
+                    </a>
+                    @foreach (var brand in ViewBag.Brands)
+                    {
+                        <a href="@Url.Action("Index", "Product", new { brandId = brand.BrandId, sortOrder = Model.SortOrder, searchTerm = Model.SearchTerm })" 
+                           class="filter-tab @(Model.BrandId == brand.BrandId ? "active" : "")">
+                            @brand.BrandName
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Sắp xếp -->
+            <div class="col-md-4">
+                <div class="sort-dropdown">
+                    <label for="sortOrder"><i class="fas fa-sort-amount-down"></i> Sắp xếp theo:</label>
+                    <select id="sortOrder" class="form-select">
+                           <option value="" selected="@(string.IsNullOrEmpty(Model.SortOrder) ? "selected" : null)">Mới nhất</option>
+                    <option value="popular" selected="@(Model.SortOrder == "popular" ? "selected" : null)">Phổ biến nhất</option>
+                    <option value="price_asc" selected="@(Model.SortOrder == "price_asc" ? "selected" : null)">Giá tăng dần</option>
+                    <option value="price_desc" selected="@(Model.SortOrder == "price_desc" ? "selected" : null)">Giá giảm dần</option>
+                    <option value="name_asc" selected="@(Model.SortOrder == "name_asc" ? "selected" : null)">Tên A-Z</option>
+                    <option value="name_desc" selected="@(Model.SortOrder == "name_desc" ? "selected" : null)">Tên Z-A</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danh sách sản phẩm -->
+<div class="container">
+    <h2 class="mb-4">Danh sách sản phẩm</h2>
+
+    <!-- Hiển thị kết quả tìm kiếm nếu có -->
+    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+    {
+        <div class="search-results-heading">
+            Kết quả tìm kiếm cho: <span class="search-term">@Model.SearchTerm</span>
+            <a href="@Url.Action("Index", "Product", new { brandId = Model.BrandId, sortOrder = Model.SortOrder })" class="clear-search">
+                <i class="fas fa-times"></i> Xóa tìm kiếm
+            </a>
+        </div>
+    }
+
+    @if (Model.Motorbikes.Count > 0)
+    {
+        <div class="row product-row">
+            @foreach (var motorbike in Model.Motorbikes)
+            {
+                <div class="col-md-6 col-lg-3 product-col mb-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            @if (motorbike.IsBestSeller)
+                            {
+                                <span class="bestseller-badge">Bán chạy</span>
+                            }
+                            <img src="@(string.IsNullOrEmpty(motorbike.Image) ? "/images/products/default.jpg" : $"/images/products/{motorbike.Image}")" 
+                                 alt="@motorbike.MotorbikeName" />
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">@motorbike.MotorbikeName</h3>
+                            <p class="product-brand">@motorbike.Brand?.BrandName</p>
+                            <p class="product-price">@string.Format("{0:N0}", motorbike.Price) VND</p>
+                            <div class="product-actions">
+                                <a href="@Url.Action("Details", "Product", new { id = motorbike.MotorbikeId })" class="btn-view-details">
+                                    Xem chi tiết
+                                </a>
+                                <button type="button" class="btn-add-to-cart-quick" data-id="@motorbike.MotorbikeId">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Phân trang -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="pagination-container">
+                <ul class="pagination">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "Product", new { brandId = Model.BrandId, sortOrder = Model.SortOrder, searchTerm = Model.SearchTerm, page = Model.CurrentPage - 1 })">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", "Product", new { brandId = Model.BrandId, sortOrder = Model.SortOrder, searchTerm = Model.SearchTerm, page = i })">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "Product", new { brandId = Model.BrandId, sortOrder = Model.SortOrder, searchTerm = Model.SearchTerm, page = Model.CurrentPage + 1 })">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <img src="/images/empty-products.svg" alt="Không có sản phẩm" />
+            <h3>Không tìm thấy sản phẩm</h3>
+            <p>Rất tiếc, chúng tôi không tìm thấy sản phẩm phù hợp với lựa chọn của bạn.</p>
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary">Xem tất cả sản phẩm</a>
+        </div>
+    }
+</div>
+
+<input type="hidden" name="__RequestVerificationToken" value="@token" />
+
+@section Scripts {
+    <script src="~/js/product.js" asp-append-version="true"></script>
+}

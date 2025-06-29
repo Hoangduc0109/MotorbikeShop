@@ -1,0 +1,20 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Đăng ký tài khoản" as UC_Register
+    usecase "Kiểm tra tên đăng nhập/email" as UC_CheckInfo
+    usecase "Tạo tài khoản mới" as UC_CreateAccount
+    usecase "Tự động đăng nhập" as UC_AutoLogin
+    usecase "Hiển thị lỗi đăng ký" as UC_ShowError
+}
+
+Customer --> UC_Register
+UC_Register --> UC_CheckInfo
+UC_CheckInfo --> UC_CreateAccount : Nếu hợp lệ
+UC_CheckInfo --> UC_ShowError : Nếu đã tồn tại
+UC_CreateAccount --> UC_AutoLogin
+
+@enduml

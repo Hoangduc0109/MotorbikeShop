@@ -1,0 +1,39 @@
+@startuml
+actor "Admin" as AdminUser
+participant "Order/Index.cshtml (View)" as View
+participant "OrderController" as Controller
+participant "Order, OrderDetail (Model)" as Model
+
+== Xem danh sách đơn hàng ==
+AdminUser -> View : Truy cập trang quản lý đơn hàng
+View -> Controller : Gửi yêu cầu GET Index (có thể kèm search/filter)
+Controller -> Model : Lấy danh sách đơn hàng, trạng thái, khách hàng
+Model --> Controller : Trả về danh sách đơn hàng
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách đơn hàng
+
+== Xem chi tiết đơn hàng ==
+AdminUser -> View : Nhấn "Xem chi tiết"
+View -> Controller : GET Details(id)
+Controller -> Model : Lấy thông tin đơn hàng, chi tiết sản phẩm, khách hàng
+Model --> Controller : Trả về dữ liệu chi tiết đơn hàng
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị chi tiết đơn hàng
+
+== Cập nhật đơn hàng ==
+AdminUser -> View : Nhấn "Cập nhật", chỉnh sửa trạng thái/ngày giao, gửi form
+View -> Controller : POST Edit(id, OrderViewModel)
+Controller -> Model : Cập nhật trạng thái/ngày giao trong DB
+Model --> Controller : Trả về kết quả cập nhật
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật danh sách
+
+== Xóa đơn hàng ==
+AdminUser -> View : Nhấn "Xóa", xác nhận xóa
+View -> Controller : POST DeleteAjax(id)
+Controller -> Model : Xóa chi tiết đơn hàng, xóa đơn hàng khỏi DB (transaction)
+Model --> Controller : Trả về kết quả xóa
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật danh sách
+
+@enduml

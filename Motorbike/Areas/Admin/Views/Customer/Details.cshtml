@@ -1,0 +1,250 @@
+@model global::Motorbike.ViewModels.CustomerViewModel
+
+@{
+    ViewData["Title"] = "Thông tin chi tiết khách hàng";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Thông tin chi tiết khách hàng</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.AccountId" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i> Chỉnh sửa
+        </a>
+        <a asp-action="Orders" asp-route-id="@Model.AccountId" class="btn btn-info">
+            <i class="fas fa-shopping-cart me-1"></i> Xem đơn hàng
+        </a>
+        <a asp-action="Contacts" asp-route-id="@Model.AccountId" class="btn btn-secondary">
+            <i class="fas fa-envelope me-1"></i> Xem liên hệ
+        </a>
+        <a asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Thông tin cơ bản</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">Tên tài khoản</h6>
+                    <p class="mb-0 fw-bold">@Model.Username</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Email</h6>
+                    <p class="mb-0">@Model.Email</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Số điện thoại</h6>
+                    <p class="mb-0">@(string.IsNullOrEmpty(Model.Phone) ? "Chưa cập nhật" : Model.Phone)</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Địa chỉ</h6>
+                    <p class="mb-0">@(string.IsNullOrEmpty(Model.Address) ? "Chưa cập nhật" : Model.Address)</p>
+                </div>
+                @if (Model.JoinDate.HasValue)
+                {
+                    <div class="mb-0">
+                        <h6 class="text-muted">Ngày tham gia</h6>
+                        <p class="mb-0">@Model.JoinDate.Value.ToString("dd/MM/yyyy")</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-2">@Model.TotalOrders</div>
+                        <div class="text-muted">Tổng số đơn hàng</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-success mb-2">@string.Format("{0:N0} đ", Model.TotalSpent)</div>
+                        <div class="text-muted">Tổng chi tiêu</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-info mb-2">@Model.TotalContacts</div>
+                        <div class="text-muted">Tổng liên hệ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Đơn hàng gần đây</h5>
+                <a asp-action="Orders" asp-route-id="@Model.AccountId" class="btn btn-sm btn-light">
+                    Xem tất cả
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+                            {
+                                foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold">#@order.OrderId</span>
+                                        </td>
+                                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@string.Format("{0:N0} đ", order.TotalPrice)</td>
+                                        <td>
+                                            @{
+                                                string statusClass = order.Status switch
+                                                {
+                                                    "Hoàn thành" => "text-success",
+                                                    "Đang xử lý" => "text-warning",
+                                                    "Đang giao" => "text-primary",
+                                                    "Đã hủy" => "text-danger",
+                                                    _ => ""
+                                                };
+                                            }
+                                            <span class="@statusClass">@order.Status</span>
+                                        </td>
+                                        <td>
+                                            <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">
+                                        <div class="text-muted">Khách hàng chưa có đơn hàng nào</div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Liên hệ gần đây</h5>
+                <a asp-action="Contacts" asp-route-id="@Model.AccountId" class="btn btn-sm btn-light">
+                    Xem tất cả
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Tiêu đề</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentContacts != null && Model.RecentContacts.Any())
+                            {
+                                foreach (var contact in Model.RecentContacts)
+                                {
+                                    <tr>
+                                        <td>@contact.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-truncate" style="max-width: 300px;">@contact.Subject</td>
+                                        <td>
+                                            @{
+                                                string statusClass = contact.Status switch
+                                                {
+                                                    "Đã xử lý" => "badge bg-success",
+                                                    "Đang xử lý" => "badge bg-warning text-dark",
+                                                    "Chưa xử lý" => "badge bg-danger",
+                                                    _ => "badge bg-secondary"
+                                                };
+                                            }
+                                            <span class="@statusClass">@contact.Status</span>
+                                        </td>
+                                        <td>
+                                            <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="@contact.ContactId" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        <div class="text-muted">Khách hàng chưa có liên hệ nào</div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        // Cấu hình toastr
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "escapeHtml": false
+        };
+
+        // Hiển thị thông báo thành công nếu có
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>toastr.success('@TempData["SuccessMessage"]');</text>
+        }
+
+        // Hiển thị thông báo lỗi nếu có
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>toastr.error('@TempData["ErrorMessage"]');</text>
+        }
+    </script>
+}

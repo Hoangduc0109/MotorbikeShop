@@ -1,0 +1,30 @@
+@startuml
+actor "Người dùng" as User
+participant "Cart/Index.cshtml (View)" as View
+participant "CartController" as Controller
+participant "CartViewModel (Model)" as Model
+
+User -> View : Truy cập trang giỏ hàng
+View -> Controller : Gửi yêu cầu lấy giỏ hàng
+Controller -> Model : Lấy dữ liệu giỏ hàng từ session
+Model --> Controller : Trả về CartViewModel
+Controller -> View : Trả về dữ liệu giỏ hàng
+View -> User : Hiển thị danh sách sản phẩm trong giỏ
+
+== Cập nhật số lượng ==
+User -> View : Nhấn tăng/giảm số lượng
+View -> Controller : POST UpdateQuantity(motorbikeId, quantity)
+Controller -> Model : Cập nhật số lượng trong CartViewModel
+Model --> Controller : Trả về CartViewModel mới
+Controller -> View : Trả về kết quả cập nhật
+View -> User : Cập nhật lại số lượng, tổng tiền
+
+== Xóa sản phẩm ==
+User -> View : Nhấn nút xóa sản phẩm
+View -> Controller : POST RemoveFromCart(motorbikeId)
+Controller -> Model : Xóa sản phẩm khỏi CartViewModel
+Model --> Controller : Trả về CartViewModel mới
+Controller -> View : Trả về kết quả xóa
+View -> User : Cập nhật lại giao diện giỏ hàng
+
+@enduml

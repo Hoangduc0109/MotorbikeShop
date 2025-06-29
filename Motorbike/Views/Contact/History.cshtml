@@ -1,0 +1,102 @@
+@model IEnumerable<global::Motorbike.Models.Contact>
+@{
+    ViewData["Title"] = "Lịch sử liên hệ";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">Lịch sử liên hệ</h1>
+    
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>Bạn chưa có tin nhắn liên hệ nào.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Tiêu đề</th>
+                        <th>Nội dung</th>
+                        <th>Trạng thái</th>
+                        <th>Phản hồi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contact in Model)
+                    {
+                        <tr>
+                            <td>@contact.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>@contact.Subject</td>
+                            <td>@(contact.Message.Length > 50 ? contact.Message.Substring(0, 50) + "..." : contact.Message)</td>
+                            <td>
+                                @if (contact.Status == "Chưa xử lý")
+                                {
+                                    <span class="badge bg-warning text-dark">@contact.Status</span>
+                                }
+                                else if (contact.Status == "Đang xử lý")
+                                {
+                                    <span class="badge bg-info">@contact.Status</span>
+                                }
+                                else if (contact.Status == "Đã xử lý")
+                                {
+                                    <span class="badge bg-success">@contact.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@contact.Status</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(contact.Response))
+                                {
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#responseModal-@contact.ContactId">
+                                        <i class="fas fa-eye me-1"></i> Xem
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="responseModal-@contact.ContactId" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Phản hồi từ BikeShop</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Thời gian phản hồi:</label>
+                                                        <p>@contact.ResponseAt?.ToString("dd/MM/yyyy HH:mm")</p>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Nội dung phản hồi:</label>
+                                                        <p>@contact.Response</p>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa có phản hồi</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    
+    <div class="mt-4">
+        <a asp-controller="Contact" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Tạo liên hệ mới
+        </a>
+    </div>
+</div>

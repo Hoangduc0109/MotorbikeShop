@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+
+actor "Admin" as Admin
+
+rectangle "Quản lý thương hiệu" {
+    usecase "Xem danh sách thương hiệu" as UC_ViewBrandList
+    usecase "Thêm thương hiệu mới" as UC_AddBrand
+    usecase "Sửa thông tin thương hiệu" as UC_EditBrand
+    usecase "Xóa thương hiệu" as UC_DeleteBrand
+    usecase "Xem chi tiết thương hiệu" as UC_ViewBrandDetail
+    usecase "Tìm kiếm thương hiệu" as UC_SearchBrand
+    usecase "Xem danh sách xe theo thương hiệu" as UC_ViewMotorbikesByBrand
+    usecase "Xem logo thương hiệu" as UC_ViewBrandLogo
+}
+
+Admin --> UC_ViewBrandList
+Admin --> UC_AddBrand
+Admin --> UC_EditBrand
+Admin --> UC_DeleteBrand
+Admin --> UC_ViewBrandDetail
+Admin --> UC_SearchBrand
+
+UC_ViewBrandDetail --> UC_ViewMotorbikesByBrand
+UC_ViewBrandDetail --> UC_ViewBrandLogo
+
+@enduml

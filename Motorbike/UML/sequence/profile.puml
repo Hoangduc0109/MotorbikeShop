@@ -1,0 +1,31 @@
+@startuml
+actor "Người dùng" as User
+participant "Profile/Index.cshtml (View)" as View
+participant "ProfileController" as Controller
+participant "Account (Model)" as Model
+
+== Xem hồ sơ cá nhân ==
+User -> View : Truy cập trang hồ sơ cá nhân
+View -> Controller : Gửi yêu cầu lấy thông tin hồ sơ
+Controller -> Model : Lấy thông tin tài khoản từ DB
+Model --> Controller : Trả về thông tin tài khoản
+Controller -> View : Trả về dữ liệu hồ sơ
+View -> User : Hiển thị thông tin cá nhân
+
+== Cập nhật thông tin cá nhân ==
+User -> View : Nhập thông tin mới và gửi cập nhật
+View -> Controller : POST UpdateProfile(ProfileViewModel)
+Controller -> Model : Cập nhật thông tin tài khoản trong DB
+Model --> Controller : Trả về kết quả cập nhật
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> User : Hiển thị thông báo
+
+== Đổi mật khẩu ==
+User -> View : Nhập mật khẩu cũ, mới, xác nhận
+View -> Controller : POST ChangePassword(ChangePasswordViewModel)
+Controller -> Model : Kiểm tra mật khẩu cũ, cập nhật mật khẩu mới
+Model --> Controller : Trả về kết quả đổi mật khẩu
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> User : Hiển thị thông báo
+
+@enduml

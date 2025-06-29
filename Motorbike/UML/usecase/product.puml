@@ -1,0 +1,18 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Xem danh sách sản phẩm" as UC_ViewProducts
+    usecase "Phân trang sản phẩm" as UC_Pagination
+    usecase "Xem thông tin cơ bản sản phẩm" as UC_ViewBasicInfo
+    usecase "Xem trạng thái tồn kho" as UC_ViewStock
+}
+
+Customer --> UC_ViewProducts
+UC_ViewProducts --> UC_Pagination
+UC_ViewProducts --> UC_ViewBasicInfo
+UC_ViewProducts --> UC_ViewStock
+
+@enduml

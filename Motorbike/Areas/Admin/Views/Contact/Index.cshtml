@@ -1,0 +1,381 @@
+@model X.PagedList.IPagedList<global::Motorbike.Models.Contact>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using MvcCore = X.PagedList.Mvc.Core
+@using WebCommon = X.PagedList.Web.Common
+
+@{
+    ViewData["Title"] = "Quản lý liên hệ";
+    var filter = ViewBag.CurrentFilter as global::Motorbike.ViewModels.ContactFilterViewModel ?? new global::Motorbike.ViewModels.ContactFilterViewModel();
+    var statusList = ViewBag.StatusList as List<string> ?? new List<string>();
+}
+
+@section Styles {
+    <link href="~/lib/x-pagedlist/pageList.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Tìm kiếm liên hệ</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" name="SearchTerm" class="form-control" placeholder="Tìm theo tên, email, tiêu đề..." value="@filter.SearchTerm" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="Status" class="form-select">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    @foreach (var status in statusList)
+                    {
+                        if (filter.Status == status)
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="FromDate" class="form-control date-picker" placeholder="Từ ngày" 
+                       value="@(filter.FromDate.HasValue ? filter.FromDate.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="ToDate" class="form-control date-picker" placeholder="Đến ngày" 
+                       value="@(filter.ToDate.HasValue ? filter.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-1"></i> Lọc
+                </button>
+            </div>
+            <div class="col-md-1">
+                <a asp-action="Index" class="btn btn-secondary w-100">
+                    <i class="fas fa-sync-alt me-1"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Danh sách liên hệ</h5>
+        <span class="badge bg-light text-dark">Tổng: @Model.TotalItemCount liên hệ</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Ngày gửi</th>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Tiêu đề</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ContactId</td>
+                            <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.Name</td>
+                            <td>@item.Email</td>
+                            <td class="text-truncate" style="max-width: 200px;">@item.Subject</td>
+                            <td>
+                                @{
+                                    string statusClass = item.Status switch
+                                    {
+                                        "Đã xử lý" => "badge bg-success",
+                                        "Đang xử lý" => "badge bg-warning text-dark",
+                                        "Chưa xử lý" => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@statusClass">@item.Status</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Details" asp-route-id="@item.ContactId" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Respond" asp-route-id="@item.ContactId" class="btn btn-info btn-sm">
+                                        <i class="fas fa-reply"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-warning btn-sm update-status-btn" 
+                                            data-id="@item.ContactId" data-current-status="@item.Status">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm delete-contact-btn" 
+                                            data-id="@item.ContactId" data-name="@item.Name">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>Không có dữ liệu liên hệ nào phù hợp.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        @if (Model.PageCount > 1)
+        {
+            var options = new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" },
+                UlElementClasses = new string[] { "pagination", "justify-content-center" },
+                DisplayLinkToFirstPage = MvcCore.PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = MvcCore.PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = MvcCore.PagedListDisplayMode.Always,
+                DisplayLinkToPreviousPage = MvcCore.PagedListDisplayMode.Always
+            };
+            
+            @Html.PagedListPager(Model, page => Url.Action("Index", new {
+                page,
+                SearchTerm = filter.SearchTerm,
+                Status = filter.Status,
+                FromDate = filter.FromDate?.ToString("yyyy-MM-dd"),
+                ToDate = filter.ToDate?.ToString("yyyy-MM-dd"),
+                SortOrder = filter.SortOrder
+            }), options)
+        }
+    </div>
+</div>
+
+<!-- Modal cập nhật trạng thái -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái liên hệ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm">
+                    <input type="hidden" id="contactIdForStatus" name="id" />
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="contactStatus" class="form-label">Trạng thái</label>
+                        <select id="contactStatus" name="status" class="form-select">
+                            <option value="Chưa xử lý">Chưa xử lý</option>
+                            <option value="Đang xử lý">Đang xử lý</option>
+                            <option value="Đã xử lý">Đã xử lý</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmUpdateStatus">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteContactModal" tabindex="-1" aria-labelledby="deleteContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteContactModalLabel">Xác nhận xóa liên hệ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa liên hệ của <span id="contactNameToDelete" class="fw-bold"></span>?</p>
+                <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteContactForm" asp-action="Delete" method="post">
+                    <input type="hidden" id="contactIdToDelete" name="id" />
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        $(document).ready(function () {
+            // Cấu hình toastr
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+                "timeOut": "5000",
+                "extendedTimeOut": "2000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut",
+                "escapeHtml": false
+            };
+
+            // Khởi tạo date picker
+            $(".date-picker").flatpickr({
+                dateFormat: "Y-m-d",
+                allowInput: true
+            });
+
+            // Hiển thị modal cập nhật trạng thái
+            $(".update-status-btn").click(function() {
+                const id = $(this).data("id");
+                const currentStatus = $(this).data("current-status");
+                
+                $("#contactIdForStatus").val(id);
+                $("#contactStatus").val(currentStatus);
+                $("#updateStatusModal").modal("show");
+            });
+
+            // Xử lý khi xác nhận cập nhật trạng thái
+            $("#confirmUpdateStatus").click(function() {
+                const id = $("#contactIdForStatus").val();
+                const status = $("#contactStatus").val();
+                
+                
+                // Lấy token từ form
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                
+                // Gửi AJAX request để cập nhật
+                $.ajax({
+                    url: '@Url.Action("UpdateStatus")',
+                    type: "POST",
+                    dataType: "json", // Chỉ định rõ kiểu dữ liệu trả về
+                    contentType: "application/x-www-form-urlencoded", // Chỉ định kiểu dữ liệu gửi đi
+                    data: { 
+                        id: id,
+                        status: status,
+                        __RequestVerificationToken: token
+                    },
+                    success: function(result) {
+                        // Thêm log để kiểm tra phản hồi
+                        console.log("Response received:", result);
+                        
+                        if (result && result.success) {
+                            toastr.success(result.message || "Cập nhật thành công!");
+                            // Đóng modal
+                            $("#updateStatusModal").modal("hide");
+                            // Làm mới trang sau 1 giây
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            toastr.error(result ? result.message : "Cập nhật không thành công!");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error, xhr.responseText);
+                        toastr.error("Đã xảy ra lỗi khi cập nhật trạng thái: " + error);
+                    }
+                });
+            });
+
+            // Hiển thị modal xác nhận xóa
+            $(".delete-contact-btn").click(function() {
+                const id = $(this).data("id");
+                const name = $(this).data("name");
+                
+                $("#contactIdToDelete").val(id);
+                $("#contactNameToDelete").text(name);
+                $("#deleteContactModal").modal("show");
+            });
+
+            // Xử lý form xóa liên hệ
+            $("#deleteContactForm").submit(function(e) {
+                e.preventDefault();
+                
+                const id = $("#contactIdToDelete").val();
+                
+                
+                // Gửi AJAX request để xóa
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: "POST",
+                    dataType: "json", // Thêm dòng này
+                    contentType: "application/x-www-form-urlencoded", // Thêm dòng này
+                    data: $(this).serialize(),
+                    success: function(result) {
+                        // Log kết quả để debug
+                        console.log("Response received:", result);
+                        
+                        if (result && result.success) {
+                            toastr.success(result.message || "Xóa liên hệ thành công!");
+                            // Đóng modal
+                            $("#deleteContactModal").modal("hide");
+                            // Làm mới trang sau 1 giây
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            toastr.error(result ? result.message : "Xóa không thành công!");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error, xhr.responseText);
+                        toastr.error("Đã xảy ra lỗi khi xóa liên hệ: " + error);
+                    }
+                });
+            });
+
+            // Hiển thị thông báo thành công nếu có
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>toastr.success('@TempData["SuccessMessage"]');</text>
+            }
+
+            // Hiển thị thông báo lỗi nếu có
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>toastr.error('@TempData["ErrorMessage"]');</text>
+            }
+        });
+    </script>
+}

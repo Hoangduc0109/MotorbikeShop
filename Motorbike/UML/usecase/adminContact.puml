@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+
+actor "Admin" as Admin
+
+rectangle "Quản lý liên hệ" {
+    usecase "Xem danh sách liên hệ" as UC_ViewList
+    usecase "Tìm kiếm liên hệ" as UC_Search
+    usecase "Lọc liên hệ" as UC_Filter
+    usecase "Xem chi tiết liên hệ" as UC_ViewDetail
+    usecase "Cập nhật trạng thái liên hệ" as UC_UpdateStatus
+    usecase "Phản hồi liên hệ" as UC_Respond
+    usecase "Xóa liên hệ" as UC_Delete
+}
+
+' Các thao tác chính
+Admin --> UC_ViewList
+Admin --> UC_Search
+Admin --> UC_Filter
+
+' Từ danh sách liên hệ, admin có thể thực hiện các thao tác sau:
+UC_ViewList --> UC_ViewDetail
+UC_ViewList --> UC_UpdateStatus
+UC_ViewList --> UC_Respond
+UC_ViewList --> UC_Delete
+
+' Khi xem chi tiết liên hệ, admin cũng có thể:
+UC_ViewDetail --> UC_UpdateStatus
+UC_ViewDetail --> UC_Respond
+UC_ViewDetail --> UC_Delete
+
+@enduml

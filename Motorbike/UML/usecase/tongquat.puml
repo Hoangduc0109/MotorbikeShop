@@ -1,0 +1,48 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Khách hàng" as Customer
+rectangle "Hệ thống Motorbike" {
+    usecase "Đăng ký tài khoản" as UC1
+    usecase "Đăng nhập" as UC2
+    usecase "Xem sản phẩm" as UC3
+    usecase "Tìm kiếm, lọc sản phẩm" as UC4
+    usecase "Thêm vào giỏ hàng" as UC5
+    usecase "Đặt hàng / Thanh toán" as UC6
+    usecase "Xem lịch sử đơn hàng" as UC7
+    usecase "Đổi mật khẩu" as UC8
+    usecase "Cập nhật thông tin cá nhân" as UC9
+    usecase "Liên hệ hỗ trợ" as UC10
+    usecase "Trang chủ" as UC15
+    usecase "Quản lý sản phẩm" as UC11
+    usecase "Quản lý đơn hàng" as UC12
+    usecase "Quản lý khách hàng" as UC13
+    usecase "Quản lý liên hệ" as UC14
+    usecase "Quản lý thương hiệu" as UC16
+}
+actor "Admin" as Admin
+
+' Liên kết Khách hàng (bên trái)
+Customer --> UC1
+Customer --> UC2
+Customer --> UC3
+Customer --> UC4
+Customer --> UC5
+Customer --> UC6
+Customer --> UC7
+Customer --> UC8
+Customer --> UC9
+Customer --> UC10
+Customer --> UC15
+
+' Liên kết Admin (bên phải)
+UC2 <-- Admin
+UC11 <-- Admin
+UC12 <-- Admin
+UC13 <-- Admin
+UC14 <-- Admin
+UC15 <-- Admin
+UC16 <-- Admin
+
+@enduml

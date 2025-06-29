@@ -1,0 +1,90 @@
+@model global::Motorbike.Models.Order
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/checkout.css" asp-append-version="true" />
+}
+
+<div class="container confirmation-container mt-5">
+    <div class="order-success">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="success-title">Đặt hàng thành công!</h1>
+        <p class="success-message">Cảm ơn bạn đã đặt hàng tại BikeShop. Đơn hàng của bạn đang được xử lý.</p>
+        
+        <div class="order-details card mt-4">
+            <div class="card-header">
+                <h2 class="section-title">Thông tin đơn hàng #@Model.OrderId</h2>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Khách hàng:</strong> @Model.CustomerName</p>
+                        <p><strong>Địa chỉ:</strong> @Model.Address</p>
+                        <p><strong>Số điện thoại:</strong> @Model.Phone</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Ngày đặt hàng:</strong> @Model.OrderDate.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</p>
+                        <p><strong>Trạng thái:</strong> <span class="badge bg-warning">@Model.Status</span></p>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+                        {
+                            foreach (var item in Model.OrderDetails)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="product-image me-3">
+                                                <img src="@(string.IsNullOrEmpty(item.Motorbike?.Image) ? "/images/products/default.jpg" : $"/images/products/{item.Motorbike.Image}")" 
+                                                     alt="@item.Motorbike?.MotorbikeName" 
+                                                     style="width: 80px; height: auto;" />
+                                            </div>
+                                            <span>@(item.Motorbike?.MotorbikeName ?? "Sản phẩm")</span>
+                                        </div>
+                                    </td>
+                                    <td>@item.Quantity</td>
+                                    <td>@string.Format("{0:N0}", item.UnitPrice) VND</td>
+                                    <td>@string.Format("{0:N0}", item.Quantity * item.UnitPrice) VND</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">Không có thông tin chi tiết đơn hàng</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                            <td class="fw-bold total-price">@string.Format("{0:N0}", Model.TotalPrice) VND</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="mt-4 text-center">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-continue-shopping">
+                        <i class="fas fa-home me-2"></i> Quay lại trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

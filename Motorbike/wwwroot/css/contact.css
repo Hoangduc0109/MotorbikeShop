@@ -1,0 +1,181 @@
+/* Banner */
+.contact-banner {
+    background: linear-gradient(rgba(0, 42, 114, 0.7), rgba(0, 42, 114, 0.7)), url('/images/banner-contact.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.contact-banner h1 {
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 2.5rem;
+}
+
+.contact-banner p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* Form Liên hệ */
+.contact-form-card {
+    background-color: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 30px;
+    height: 100%;
+}
+
+.contact-title {
+    font-weight: 700;
+    color: #002a72;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.contact-subtitle {
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+.btn-submit-contact {
+    background-color: #ff5e14;
+    border-color: #ff5e14;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-submit-contact:hover {
+    background-color: #e54d00;
+    border-color: #e54d00;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 94, 20, 0.3);
+}
+
+/* Thông tin liên hệ */
+.contact-info-card {
+    background-color: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.contact-info-item i {
+    font-size: 20px;
+    color: #ff5e14;
+    margin-right: 15px;
+    margin-top: 5px;
+}
+
+.contact-info-content h5 {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.contact-info-content p {
+    margin-bottom: 0;
+    color: #6c757d;
+}
+
+.contact-info-content a {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.contact-info-content a:hover {
+    color: #ff5e14;
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    color: #002a72;
+    transition: all 0.3s;
+}
+
+.social-link:hover {
+    background-color: #ff5e14;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Google Map */
+.google-map-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .contact-form-card, .contact-info-card {
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-banner h1 {
+        font-size: 2rem;
+    }
+    
+    .contact-banner p {
+        font-size: 1rem;
+    }
+    
+    .contact-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.contact-form-card, .contact-info-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.contact-info-card {
+    animation-delay: 0.2s;
+}
+
+.google-map-wrapper {
+    animation: fadeInUp 0.6s ease-out;
+    animation-delay: 0.4s;
+}
+
+/* Style for form inputs */
+.form-control:focus {
+    border-color: #ff5e14;
+    box-shadow: 0 0 0 0.25rem rgba(255, 94, 20, 0.25);
+}

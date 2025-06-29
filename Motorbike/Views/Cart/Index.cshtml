@@ -1,0 +1,99 @@
+@model global::Motorbike.ViewModels.CartViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+}
+
+<!-- Đặt token CSRF ở đây, loại bỏ ViewData["Title"] = "Sản phẩm" trùng lặp -->
+<input type="hidden" name="__RequestVerificationToken" value="@token" />
+
+<div class="container cart-container mt-5">
+    <h1 class="cart-title mb-4">Giỏ hàng</h1>
+
+    @if (Model.CartItems.Count > 0)
+    {
+        <div class="cart-content">
+            <div class="table-responsive">
+                <table class="table cart-table">
+                    <thead>
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <tr class="cart-item" data-id="@item.MotorbikeId">
+                                <td class="product-image">
+                                    <img src="@(string.IsNullOrEmpty(item.Image) ? "/images/products/default.jpg" : $"/images/products/{item.Image}")"
+                                         alt="@item.MotorbikeName" />
+                                </td>
+                                <td class="product-name">
+                                    <a href="@Url.Action("Details", "Product", new { id = item.MotorbikeId })">@item.MotorbikeName</a>
+                                </td>
+                                <td class="product-price">@string.Format("{0:N0}", item.Price) VND</td>
+                                <td class="product-quantity">
+                                    <div class="quantity-control cart-quantity">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="text" class="quantity-input" value="@item.Quantity" readonly>
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </td>
+                                <td class="product-total">@string.Format("{0:N0}", item.Total) VND</td>
+                                <td class="product-remove">
+                                    <button class="btn-remove" data-id="@item.MotorbikeId">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cart-summary">
+                <div class="cart-summary-content">
+                    <div class="summary-item">
+                        <span class="summary-label">Tổng cộng:</span>
+                        <span class="summary-value" id="cartTotal">@string.Format("{0:N0}", Model.TotalAmount) VND</span>
+                    </div>
+                    <div class="summary-actions">
+                        <a href="@Url.Action("Index", "Product")" class="btn-continue-shopping">
+                            <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                        </a>
+                        <a href="@Url.Action("Index", "Checkout")" class="btn-checkout">
+                            Thanh toán <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">
+            <div class="empty-cart-content">
+                <i class="fas fa-shopping-cart fa-5x"></i>
+                <h2>Giỏ hàng của bạn đang trống</h2>
+                <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
+                <a href="@Url.Action("Index", "Product")" class="btn-shop-now">
+                    Khám phá sản phẩm ngay
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+}

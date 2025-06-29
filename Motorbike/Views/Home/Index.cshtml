@@ -1,0 +1,165 @@
+@model global::Motorbike.ViewModels.ContactViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/product.css" asp-append-version="true" /> <!-- Thêm dòng này -->
+}
+
+<!-- Banner với hình ảnh mới -->
+<div class="banner text-center text-white" style="background-image: url('/images/banner/banner.jpg'); background-size: cover; background-position: center;">
+    <div class="smoke-effect"></div>
+    <div class="container">
+        <h1 class="display-4 fw-bold">Khám phá cảm giác lái xe đỉnh cao</h1>
+        <p class="lead mt-3">Trải nghiệm sức mạnh và đẳng cấp với những mẫu xe máy cao cấp tại BikeShop</p>
+        <div class="mt-5">
+            <a href="#" class="btn btn-danger btn-lg px-4 py-2 me-3" style="background-color: var(--primary-color); border: none;">Khám phá ngay</a>
+            <a href="#" class="btn btn-outline-light btn-lg px-4 py-2">Tìm hiểu thêm</a>
+        </div>
+    </div>
+</div>
+
+<!-- Danh mục thương hiệu -->
+<div class="brands-section">
+    <div class="container">
+        <h2 class="section-heading">Danh mục thương hiệu</h2>
+        <div class="row justify-content-center">
+            @if (ViewBag.Brands != null)
+            {
+                @foreach (var brand in ViewBag.Brands)
+                {
+                    <div class="col-md-2 col-sm-4 col-6 mb-4 text-center">
+                        <div class="brand-item p-3 rounded">
+                            @if (string.IsNullOrEmpty(brand.Logo))
+                            {
+                                <img src="/images/category/default-brand.png" alt="@brand.BrandName" class="img-fluid" style="height: 60px; object-fit: contain;">
+                            }
+                            else
+                            {
+                                <img src="/images/category/@brand.Logo" alt="@brand.BrandName" class="img-fluid" style="height: 60px; object-fit: contain;">
+                            }
+                            <p class="mt-3 mb-0">@brand.BrandName</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p>Không có thương hiệu nào được tìm thấy</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Xe máy nổi bật -->
+<div class="products-section">
+    <div class="container">
+        <h2 class="section-heading">Xe máy nổi bật</h2>
+        <div class="row product-row">
+            @if (ViewBag.FeaturedMotorbikes != null)
+            {
+                @foreach (var motorbike in ((IEnumerable<dynamic>)ViewBag.FeaturedMotorbikes).Where(m => m.IsBestSeller).Take(4))
+                {
+                    <div class="col-md-3 col-lg-3 product-col mb-4">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <span class="bestseller-badge">Bán chạy</span>
+                                <img src="@(string.IsNullOrEmpty(motorbike.Image) ? "/images/products/default.jpg" : $"/images/products/{motorbike.Image}")" 
+                                     alt="@motorbike.MotorbikeName" />
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">@motorbike.MotorbikeName</h3>
+                                <p class="product-brand">@motorbike.Brand?.BrandName</p>
+                                <p class="product-price">@string.Format("{0:N0}", motorbike.Price) VND</p>
+                                <div class="product-actions">
+                                    <a href="@Url.Action("Details", "Product", new { id = motorbike.MotorbikeId })" class="btn-view-details">
+                                        Xem chi tiết
+                                    </a>
+                                    <button type="button" class="btn-add-to-cart-quick" data-id="@motorbike.MotorbikeId">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p>Không có sản phẩm nào được tìm thấy</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Giữ nguyên phần liên hệ -->
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+<div class="contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="mb-4">Liên hệ với chúng tôi</h2>
+                <form asp-action="SendContact" asp-controller="Home" method="post" class="home-contact-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập họ và tên" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label"></label>
+                        <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Subject" class="form-label"></label>
+                        <input asp-for="Subject" class="form-control" placeholder="Nhập tiêu đề tin nhắn" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Message" class="form-label"></label>
+                        <textarea asp-for="Message" class="form-control" rows="4" placeholder="Nhập tin nhắn của bạn"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" name="__RequestVerificationToken" value="@token" />
+                    <button type="submit" class="btn btn-primary contact-btn">
+                        <i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-6 d-flex align-items-center">
+                <div class="map-container w-100">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.118196464841!2d108.43399327482382!3d11.966317688264265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317112c929cbd58f%3A0x5842b98761c9e0eb!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBZZXJzaW4gxJDDoCBM4bqhdA!5e0!3m2!1svi!2s!4v1750229827404!5m2!1svi!2s" 
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/home.js" asp-append-version="true"></script>
+    <script src="~/js/product.js" asp-append-version="true"></script>
+}

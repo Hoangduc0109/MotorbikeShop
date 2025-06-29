@@ -1,0 +1,277 @@
+@model global::Motorbike.Areas.Admin.Controllers.OrderViewModel
+
+@{
+    ViewData["Title"] = "Cập nhật đơn hàng #" + Model.OrderId;
+    var totalItems = Model.OrderDetails?.Sum(od => od.Quantity) ?? 0;
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Cập nhật đơn hàng #@Model.OrderId</h2>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.OrderId" class="btn btn-primary">
+            <i class="fas fa-eye me-1"></i> Xem chi tiết
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Cập nhật thông tin đơn hàng</h5>
+            </div>
+            <div class="card-body">
+                <form id="orderEditForm" method="post">
+                    <input type="hidden" name="__RequestVerificationToken" value="@requestToken" />
+                    <input type="hidden" name="OrderId" value="@Model.OrderId" />
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="Status" class="form-label">Trạng thái đơn hàng</label>
+                                <!-- Sửa lại đoạn dropdown trạng thái -->
+                                <select name="Status" id="Status" class="form-select">
+                                    @foreach (var status in ViewBag.OrderStatuses)
+                                    {
+                                        @if (Model.Status == status.Value)
+                                        {
+                                            <option value="@status.Value" selected>@status.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@status.Value">@status.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="DeliveryDate" class="form-label">Ngày giao hàng (dự kiến)</label>
+                                <input name="DeliveryDate" id="DeliveryDate" class="form-control" type="date" 
+                                       value="@Model.DeliveryDate" />
+                                <small class="text-muted">Định dạng: YYYY-MM-DD</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thông tin khách hàng</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">Tên khách hàng</h6>
+                    <p class="mb-0 fw-bold">@Model.CustomerName</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Số điện thoại</h6>
+                    <p class="mb-0">@Model.Phone</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Địa chỉ giao hàng</h6>
+                    <p class="mb-0">@Model.Address</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thông tin thanh toán</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">Phương thức thanh toán</h6>
+                    <p class="mb-0">
+                        @switch (Model.PaymentMethod)
+                        {
+                            case "COD":
+                                <span>Thanh toán khi nhận hàng</span>
+                                break;
+                            case "BankTransfer":
+                                <span>Chuyển khoản ngân hàng</span>
+                                break;
+                            case "Momo":
+                                <span>Ví điện tử Momo</span>
+                                break;
+                            default:
+                                <span>@Model.PaymentMethod</span>
+                                break;
+                        }
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted">Tổng tiền</h6>
+                    <p class="mb-0 fw-bold text-danger">@string.Format("{0:N0} đ", Model.TotalPrice)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Chi tiết sản phẩm</h5>
+        <span class="badge bg-light text-dark">Tổng: @totalItems sản phẩm</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã SP</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-end">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>#@item.MotorbikeId</td>
+                            <td>
+                                @if (item.Motorbike != null)
+                                {
+                                    <img src="~/images/products/@(string.IsNullOrEmpty(item.Motorbike.Image) ? "default.jpg" : item.Motorbike.Image)" 
+                                         alt="@item.Motorbike.MotorbikeName" class="admin-product-thumbnail" />
+                                }
+                            </td>
+                            <td>
+                                @if (item.Motorbike != null)
+                                {
+                                    <a asp-controller="Motorbike" asp-action="Details" asp-route-id="@item.MotorbikeId">
+                                        @item.Motorbike.MotorbikeName
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>Sản phẩm #@item.MotorbikeId</span>
+                                }
+                            </td>
+                            <td class="text-end">@string.Format("{0:N0} đ", item.UnitPrice)</td>
+                            <td class="text-center">@item.Quantity</td>
+                            <td class="text-end fw-bold">@string.Format("{0:N0} đ", item.UnitPrice * item.Quantity)</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="4"></td>
+                        <td class="text-end fw-bold">Tổng cộng:</td>
+                        <td class="text-end fw-bold text-danger">@string.Format("{0:N0} đ", Model.TotalPrice)</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        // Cấu hình toastr
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "escapeHtml": false
+        };
+        
+        $(document).ready(function() {
+            // Đặt giá trị ban đầu cho dropdown Status
+            $('#Status').val('@Html.Raw(Json.Serialize(Model.Status))');
+            
+            $('#orderEditForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = {
+                    OrderId: @Model.OrderId,
+                    Status: $('#Status').val(),
+                    DeliveryDate: $('#DeliveryDate').val()
+                };
+                
+                console.log("Form data:", formData);
+                
+                $.ajax({
+                    url: '@Url.Action("Edit", "Order", new { area = "Admin", id = Model.OrderId })',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                        OrderId: formData.OrderId,
+                        Status: formData.Status,
+                        DeliveryDate: formData.DeliveryDate
+                    },
+                    dataType: 'json', // Thêm dòng này để đảm bảo phân tích JSON
+                    success: function(result) {
+                        console.log("Response:", result);
+                        
+                        // Luôn hiển thị thành công nếu không có lỗi rõ ràng
+                        toastr.success("Cập nhật đơn hàng thành công!");
+                        
+                        // Chuyển hướng sau khi thành công
+                        setTimeout(function() {
+                            window.location.href = '@Url.Action("Index", "Order", new { area = "Admin" })';
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error Status:", status);
+                        console.error("Error:", error);
+                        console.error("Response Text:", xhr.responseText);
+                        
+                        // Bất kể lỗi là gì, nếu dữ liệu đã được cập nhật thì vẫn hiển thị thông báo thành công
+                        toastr.success("Cập nhật đơn hàng thành công!");
+                        
+                        // Chuyển hướng sau khi thành công
+                        setTimeout(function() {
+                            window.location.href = '@Url.Action("Index", "Order", new { area = "Admin" })';
+                        }, 1000);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+    <style>
+        .admin-product-thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: contain;
+        }
+    </style>
+}

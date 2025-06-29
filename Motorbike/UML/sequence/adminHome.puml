@@ -1,0 +1,16 @@
+@startuml
+actor "Admin" as AdminUser
+participant "Home/Index.cshtml (View)" as View
+participant "HomeController" as Controller
+participant "DashboardViewModel (Model)" as Model
+
+AdminUser -> View : Truy cập trang chủ admin
+View -> Controller : Gửi yêu cầu GET /Admin/Home/Index
+Controller -> Model : Lấy tổng số đơn hàng, sản phẩm, khách hàng
+Controller -> Model : Lấy danh sách đơn hàng gần đây
+Controller -> Model : Lấy danh sách liên hệ mới
+Model --> Controller : Trả về dữ liệu tổng quan, đơn hàng, liên hệ
+Controller -> View : Trả về DashboardViewModel
+View -> AdminUser : Hiển thị số liệu tổng quan, đơn hàng gần đây, liên hệ mới
+
+@enduml

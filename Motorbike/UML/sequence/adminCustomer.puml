@@ -1,0 +1,47 @@
+@startuml
+actor "Admin" as AdminUser
+participant "Customer/Index.cshtml (View)" as View
+participant "CustomerController" as Controller
+participant "Account, CustomerViewModel (Model)" as Model
+
+== Xem danh sách khách hàng ==
+AdminUser -> View : Truy cập trang quản lý khách hàng
+View -> Controller : Gửi yêu cầu GET Index (có thể kèm search/filter/sort)
+Controller -> Model : Lấy danh sách khách hàng theo điều kiện
+Model --> Controller : Trả về danh sách khách hàng
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách khách hàng
+
+== Xem chi tiết khách hàng ==
+AdminUser -> View : Nhấn "Chi tiết"
+View -> Controller : GET Details(id)
+Controller -> Model : Lấy thông tin khách hàng, đơn hàng gần đây, liên hệ gần đây
+Model --> Controller : Trả về dữ liệu chi tiết khách hàng
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị thông tin chi tiết khách hàng
+
+== Chỉnh sửa thông tin khách hàng ==
+AdminUser -> View : Nhấn "Sửa", chỉnh sửa thông tin, gửi form
+View -> Controller : POST Edit(id, Account)
+Controller -> Model : Cập nhật thông tin khách hàng trong DB
+Model --> Controller : Trả về kết quả cập nhật
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật giao diện
+
+== Xem đơn hàng của khách hàng ==
+AdminUser -> View : Nhấn "Đơn hàng"
+View -> Controller : GET Orders(id, page)
+Controller -> Model : Lấy danh sách đơn hàng của khách hàng
+Model --> Controller : Trả về danh sách đơn hàng
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách đơn hàng
+
+== Xem liên hệ của khách hàng ==
+AdminUser -> View : Nhấn "Liên hệ"
+View -> Controller : GET Contacts(id, page)
+Controller -> Model : Lấy danh sách liên hệ của khách hàng
+Model --> Controller : Trả về danh sách liên hệ
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách liên hệ
+
+@enduml

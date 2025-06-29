@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Xem hồ sơ cá nhân" as UC_ViewProfile
+    usecase "Cập nhật thông tin cá nhân" as UC_UpdateProfile
+    usecase "Đổi mật khẩu" as UC_ChangePassword
+    usecase "Kiểm tra hợp lệ thông tin" as UC_ValidateInfo
+    usecase "Kiểm tra hợp lệ mật khẩu" as UC_ValidatePassword
+    usecase "Hiển thị thông báo thành công/thất bại" as UC_ShowMessage
+}
+
+Customer --> UC_ViewProfile
+Customer --> UC_UpdateProfile
+Customer --> UC_ChangePassword
+
+UC_UpdateProfile --> UC_ValidateInfo
+UC_ValidateInfo --> UC_ShowMessage
+
+UC_ChangePassword --> UC_ValidatePassword
+UC_ValidatePassword --> UC_ShowMessage
+
+@enduml

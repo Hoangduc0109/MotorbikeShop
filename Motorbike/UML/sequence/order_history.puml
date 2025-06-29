@@ -1,0 +1,22 @@
+@startuml
+actor "Người dùng" as User
+participant "OrderHistory/Index.cshtml (View)" as View
+participant "OrderHistoryController" as Controller
+participant "OrderHistoryViewModel (Model)" as Model
+
+User -> View : Truy cập trang lịch sử đơn hàng
+View -> Controller : Gửi yêu cầu lấy danh sách đơn hàng
+Controller -> Model : Lấy danh sách đơn hàng của người dùng
+Model --> Controller : Trả về danh sách đơn hàng
+Controller -> View : Trả về dữ liệu lịch sử đơn hàng
+View -> User : Hiển thị danh sách đơn hàng
+
+== Xem chi tiết đơn hàng ==
+User -> View : Nhấn "Chi tiết" đơn hàng
+View -> Controller : Gửi yêu cầu lấy chi tiết đơn hàng (id)
+Controller -> Model : Lấy thông tin đơn hàng và các sản phẩm trong đơn
+Model --> Controller : Trả về chi tiết đơn hàng
+Controller -> View : Trả về dữ liệu chi tiết đơn hàng
+View -> User : Hiển thị thông tin chi tiết đơn hàng
+
+@enduml

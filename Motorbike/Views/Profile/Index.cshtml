@@ -1,0 +1,231 @@
+@model global::Motorbike.ViewModels.CombinedProfileViewModel
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<div class="container mt-5 mb-5">
+    <h1 class="profile-heading mb-4">Thông tin cá nhân</h1>
+    
+    <div class="row">
+        <!-- Phần thông tin cá nhân -->
+        <div class="col-md-12">
+            <div class="card profile-card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Thông tin cá nhân</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ProfileSuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> @TempData["ProfileSuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["ProfileErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> @TempData["ProfileErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    <!-- Sửa form cập nhật thông tin -->
+                    <form asp-action="UpdateProfile" asp-controller="Profile" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Tên:</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="ProfileInfo.Username" name="ProfileInfo.Username" class="form-control" disabled />
+                                <!-- Thêm hidden field để đảm bảo giá trị vẫn được gửi đi -->
+                                <input type="hidden" name="ProfileInfo.Username" value="@Model.ProfileInfo.Username" />
+                                <small class="form-text text-muted">Tên đăng nhập không thể thay đổi</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Email:</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="ProfileInfo.Email" name="ProfileInfo.Email" class="form-control" />
+                                <span asp-validation-for="ProfileInfo.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Số điện thoại:</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="ProfileInfo.Phone" name="ProfileInfo.Phone" class="form-control" />
+                                <span asp-validation-for="ProfileInfo.Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Địa chỉ:</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="ProfileInfo.Address" name="ProfileInfo.Address" class="form-control" />
+                                <span asp-validation-for="ProfileInfo.Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-9 offset-md-3">
+                                <button type="submit" class="btn btn-primary btn-update">
+                                    <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Phần đổi mật khẩu -->
+            <div class="card profile-card">
+                <div class="card-header">
+                    <h4 class="mb-0">Đổi mật khẩu</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["PasswordSuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> @TempData["PasswordSuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["PasswordErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> @TempData["PasswordErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    <!-- Sửa form đổi mật khẩu -->
+                    <form asp-action="ChangePassword" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password.CurrentPassword" class="form-label"></label>
+                            <input asp-for="Password.CurrentPassword" class="form-control" />
+                            <span asp-validation-for="Password.CurrentPassword" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password.NewPassword" class="form-label"></label>
+                            <input asp-for="Password.NewPassword" class="form-control" />
+                            <span asp-validation-for="Password.NewPassword" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password.ConfirmPassword" class="form-label"></label>
+                            <input asp-for="Password.ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/profile.js" asp-append-version="true"></script>
+    <script>
+        // Cập nhật đo lường độ mạnh mật khẩu để sử dụng ID đúng
+        document.addEventListener('DOMContentLoaded', function() {
+            const newPasswordInput = document.getElementById('newPassword');
+            const passwordStrength = document.querySelector('.password-strength');
+            const strengthBar = document.querySelector('.strength-bar');
+            const strengthText = document.querySelector('.password-strength-text span');
+            
+            if (newPasswordInput) {
+                passwordStrength.style.display = 'block';
+                
+                newPasswordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    
+                    // Xóa tất cả các class độ mạnh trước đó
+                    passwordStrength.classList.remove('strength-weak', 'strength-medium', 'strength-strong', 'strength-very-strong');
+                    
+                    if (password.length === 0) {
+                        strengthText.textContent = 'Yếu';
+                        return;
+                    }
+                    
+                    // Tính điểm độ mạnh của mật khẩu
+                    if (password.length >= 6) strength += 1;
+                    if (password.length >= 10) strength += 1;
+                    if (/[A-Z]/.test(password)) strength += 1;
+                    if (/[0-9]/.test(password)) strength += 1;
+                    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+                    
+                    // Hiển thị độ mạnh
+                    switch (strength) {
+                        case 0:
+                        case 1:
+                            passwordStrength.classList.add('strength-weak');
+                            strengthText.textContent = 'Yếu';
+                            break;
+                        case 2:
+                            passwordStrength.classList.add('strength-medium');
+                            strengthText.textContent = 'Trung bình';
+                            break;
+                        case 3:
+                        case 4:
+                            passwordStrength.classList.add('strength-strong');
+                            strengthText.textContent = 'Mạnh';
+                            break;
+                        case 5:
+                            passwordStrength.classList.add('strength-very-strong');
+                            strengthText.textContent = 'Rất mạnh';
+                            break;
+                    }
+                });
+            }
+        });
+    </script>
+
+    @if (TempData["ProfileErrorMessage"] != null || TempData["PasswordErrorMessage"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll('.alert-danger');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 10000);
+                });
+            });
+        </script>
+    }
+
+    <!-- Debug form submission -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileForm = document.querySelector('form[asp-action="UpdateProfile"]');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    const formData = new FormData(this);
+                    console.log('Form data being submitted:');
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+                });
+            }
+        });
+    </script>
+}

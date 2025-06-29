@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+
+actor "Admin" as Admin
+
+rectangle "Quản lý đơn hàng" {
+    usecase "Xem danh sách đơn hàng" as UC_ViewOrderList
+    usecase "Tìm kiếm đơn hàng" as UC_SearchOrder
+    usecase "Lọc đơn hàng theo trạng thái" as UC_FilterOrder
+    usecase "Xem chi tiết đơn hàng" as UC_ViewOrderDetail
+    usecase "Cập nhật trạng thái đơn hàng" as UC_UpdateOrderStatus
+    usecase "Sửa thông tin đơn hàng" as UC_EditOrder
+    usecase "Xóa đơn hàng" as UC_DeleteOrder
+    usecase "Xem thông tin khách hàng" as UC_ViewCustomerInfo
+    usecase "Xem chi tiết sản phẩm trong đơn" as UC_ViewOrderItems
+}
+
+Admin --> UC_ViewOrderList
+Admin --> UC_SearchOrder
+Admin --> UC_FilterOrder
+Admin --> UC_ViewOrderDetail
+Admin --> UC_EditOrder
+Admin --> UC_DeleteOrder
+UC_ViewOrderDetail --> UC_UpdateOrderStatus
+UC_ViewOrderDetail --> UC_ViewCustomerInfo
+UC_ViewOrderDetail --> UC_ViewOrderItems
+
+@enduml

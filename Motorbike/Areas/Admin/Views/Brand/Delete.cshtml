@@ -1,0 +1,125 @@
+@model global::Motorbike.Models.Brand
+
+@{
+    ViewData["Title"] = "Xóa thương hiệu";
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Xóa thương hiệu</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Bạn có chắc chắn muốn xóa thương hiệu này?</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <img src="~/images/category/@(string.IsNullOrEmpty(Model.Logo) ? "default.jpg" : Model.Logo)" 
+                             alt="@Model.BrandName" class="img-fluid brand-logo-detail" />
+                    </div>
+                    <div class="col-md-8">
+                        <h3>@Model.BrandName</h3>
+                        <div class="mt-3">
+                            <strong>Mã thương hiệu:</strong> @Model.BrandId
+                        </div>
+                        <div class="mt-2">
+                            <strong>Số lượng xe:</strong> @(Model.Motorbikes?.Count ?? 0) xe
+                        </div>
+                    </div>
+                </div>
+                
+                @if (Model.Motorbikes != null && Model.Motorbikes.Any())
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> 
+                        <strong>Cảnh báo:</strong> Thương hiệu này có @Model.Motorbikes.Count xe máy. 
+                        Bạn không thể xóa thương hiệu đang được sử dụng.
+                    </div>
+                }
+                else
+                {
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="BrandId" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+                
+                var form = $(this);
+                
+                // Hiển thị thông báo đang xử lý
+                toastr.info("Đang xử lý yêu cầu xóa...");
+                
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(result) {
+                        if (result && result.success) {
+                            toastr.success(result.message || "Xóa thương hiệu thành công!");
+                            
+                            // Chuyển hướng sau 1 giây
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index")';
+                            }, 1000);
+                        } else {
+                            toastr.error(result?.message || "Có lỗi xảy ra khi xóa thương hiệu!");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Lỗi:", xhr.responseText);
+                        toastr.error('Đã xảy ra lỗi khi xóa thương hiệu.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+    <style>
+        .brand-logo-detail {
+            max-height: 150px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+    </style>
+}

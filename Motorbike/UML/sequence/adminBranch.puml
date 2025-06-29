@@ -1,0 +1,39 @@
+@startuml
+actor "Admin" as AdminUser
+participant "Brand/Index.cshtml (View)" as View
+participant "BrandController" as Controller
+participant "Brand (Model)" as Model
+
+== Xem danh sách thương hiệu ==
+AdminUser -> View : Truy cập trang quản lý thương hiệu
+View -> Controller : Gửi yêu cầu GET Index (có thể kèm search/filter)
+Controller -> Model : Lấy danh sách thương hiệu, số lượng xe
+Model --> Controller : Trả về danh sách thương hiệu
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách thương hiệu
+
+== Thêm thương hiệu mới ==
+AdminUser -> View : Nhấn "Thêm thương hiệu", nhập thông tin, gửi form
+View -> Controller : POST Create (Brand, logoFile)
+Controller -> Model : Kiểm tra hợp lệ, lưu logo, thêm thương hiệu vào DB
+Model --> Controller : Trả về kết quả thêm mới
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật danh sách
+
+== Sửa thương hiệu ==
+AdminUser -> View : Nhấn "Sửa", chỉnh sửa thông tin, gửi form
+View -> Controller : POST Edit (Brand, logoFile)
+Controller -> Model : Kiểm tra hợp lệ, cập nhật DB, xử lý logo
+Model --> Controller : Trả về kết quả cập nhật
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật danh sách
+
+== Xóa thương hiệu ==
+AdminUser -> View : Nhấn "Xóa", xác nhận xóa
+View -> Controller : POST DeleteAjax (id)
+Controller -> Model : Kiểm tra ràng buộc, xóa logo, xóa thương hiệu khỏi DB
+Model --> Controller : Trả về kết quả xóa
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật danh sách
+
+@enduml

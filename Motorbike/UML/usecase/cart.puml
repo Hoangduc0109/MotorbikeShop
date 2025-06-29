@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Xem giỏ hàng" as UC_ViewCart
+    usecase "Thêm sản phẩm vào giỏ hàng" as UC_AddToCart
+    usecase "Cập nhật số lượng sản phẩm" as UC_UpdateQuantity
+    usecase "Xóa sản phẩm khỏi giỏ hàng" as UC_RemoveFromCart
+    usecase "Xem tổng tiền và số lượng" as UC_ViewTotal
+}
+
+Customer --> UC_ViewCart
+Customer --> UC_AddToCart
+Customer --> UC_UpdateQuantity
+Customer --> UC_RemoveFromCart
+UC_ViewCart --> UC_ViewTotal
+UC_AddToCart --> UC_ViewCart
+UC_UpdateQuantity --> UC_ViewCart
+UC_RemoveFromCart --> UC_ViewCart
+
+@enduml

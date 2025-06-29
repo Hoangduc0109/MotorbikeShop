@@ -1,0 +1,27 @@
+@startuml
+actor "Người dùng" as User
+participant "Contact/Index.cshtml (View)" as View
+participant "ContactController" as Controller
+participant "Contact (Model)" as Model
+
+== Gửi liên hệ ==
+User -> View : Nhập thông tin liên hệ và gửi form
+View -> Controller : POST SendMessage(ContactViewModel)
+Controller -> Model : Tạo mới Contact, lưu vào DB
+alt Lưu thành công
+    Controller -> View : Redirect đến trang Success
+    View -> User : Hiển thị thông báo gửi liên hệ thành công
+else Lỗi lưu dữ liệu
+    Controller -> View : Hiển thị lại form và lỗi
+    View -> User : Thông báo lỗi gửi liên hệ
+end
+
+== Xem lịch sử liên hệ ==
+User -> View : Truy cập trang lịch sử liên hệ
+View -> Controller : GET History
+Controller -> Model : Lấy danh sách liên hệ của người dùng
+Model --> Controller : Trả về danh sách liên hệ
+Controller -> View : Trả về dữ liệu lịch sử liên hệ
+View -> User : Hiển thị danh sách liên hệ và phản hồi (nếu có)
+
+@enduml

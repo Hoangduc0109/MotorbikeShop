@@ -1,0 +1,18 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Tìm kiếm sản phẩm" as UC_Search
+    usecase "Nhập từ khóa tìm kiếm" as UC_EnterKeyword
+    usecase "Hiển thị kết quả tìm kiếm" as UC_ShowResults
+    usecase "Phân trang kết quả tìm kiếm" as UC_PaginateResults
+}
+
+Customer --> UC_Search
+UC_Search --> UC_EnterKeyword
+UC_Search --> UC_ShowResults
+UC_ShowResults --> UC_PaginateResults
+
+@enduml

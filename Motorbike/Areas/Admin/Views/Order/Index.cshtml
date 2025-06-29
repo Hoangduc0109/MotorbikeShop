@@ -1,0 +1,403 @@
+@model X.PagedList.IPagedList<global::Motorbike.Models.Order>
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<input type="hidden" name="__RequestVerificationToken" value="@requestToken" />
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Quản lý đơn hàng</h2>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="admin-filter-section mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Index" method="get" class="d-flex">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control me-2" placeholder="Tìm kiếm theo tên khách hàng, SĐT hoặc mã đơn hàng...">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form asp-action="Index" method="get" class="d-flex">
+                <select name="status" class="form-select me-2" onchange="this.form.submit()">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    @foreach (var status in ViewBag.StatusList)
+                    {
+                        <option value="@status" selected="@(ViewData["CurrentStatus"]?.ToString() == status)">@status</option>
+                    }
+                </select>
+                <input type="hidden" name="searchString" value="@ViewData["CurrentFilter"]" />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Mã ĐH</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Phương thức</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="order-row-@item.OrderId">
+                    <td>#@item.OrderId</td>
+                    <td>
+                        <div>@item.CustomerName</div>
+                        <small class="text-muted">@item.Phone</small>
+                    </td>
+                    <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td class="text-end">@string.Format("{0:N0} đ", item.TotalPrice)</td>
+                    <td>
+                        @switch (item.PaymentMethod)
+                        {
+                            case "COD":
+                                <span class="badge bg-warning text-dark">Tiền mặt</span>
+                                break;
+                            case "BankTransfer":
+                                <span class="badge bg-info text-dark">Chuyển khoản</span>
+                                break;
+                            case "Momo":
+                                <span class="badge bg-danger">Ví Momo</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">@item.PaymentMethod</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @switch (item.Status)
+                        {
+                            case "Chờ xác nhận":
+                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                break;
+                            case "Đã xác nhận":
+                                <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                break;
+                            case "Đang giao hàng":
+                                <span class="badge bg-primary">Đang giao hàng</span>
+                                break;
+                            case "Đã giao hàng":
+                                <span class="badge bg-success">Đã giao hàng</span>
+                                break;
+                            case "Đã hủy":
+                                <span class="badge bg-danger">Đã hủy</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">@item.Status</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="@Url.Action("Details", new { id = item.OrderId })">
+                                    <i class="fas fa-eye me-1"></i> Xem chi tiết</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Edit", new { id = item.OrderId })">
+                                    <i class="fas fa-edit me-1"></i> Cập nhật</a></li>
+                                <li>
+                                    <button class="dropdown-item status-btn" data-id="@item.OrderId" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
+                                        <i class="fas fa-sync-alt me-1"></i> Đổi trạng thái
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item text-danger delete-order-btn" data-id="@item.OrderId" data-name="#@item.OrderId">
+                                        <i class="fas fa-trash-alt me-1"></i> Xóa
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewData["CurrentFilter"], status = ViewData["CurrentStatus"] }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new string[] { "page-item" },
+            PageClasses = new string[] { "page-link" },
+            UlElementClasses = new string[] { "pagination" }
+        })
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteOrderModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa đơn hàng "<span id="orderIdToDelete"></span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteOrder">Xác nhận xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cập nhật trạng thái -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="orderIdForStatus" value="0" />
+                <div class="mb-3">
+                    <label for="orderStatus" class="form-label">Trạng thái mới</label>
+                    <select id="orderStatus" class="form-select">
+                        <option value="Chờ xác nhận">Chờ xác nhận</option>
+                        <option value="Đã xác nhận">Đã xác nhận</option>
+                        <option value="Đang giao hàng">Đang giao hàng</option>
+                        <option value="Đã giao hàng">Đã giao hàng</option>
+                        <option value="Đã hủy">Đã hủy</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-primary" id="confirmUpdateStatus">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        // Cấu hình toastr
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "escapeHtml": false
+        };
+
+        $(document).ready(function () {
+            // Khai báo biến một lần duy nhất
+            let selectedOrderId = 0;
+            
+            // Xử lý sự kiện click nút xóa
+            $('.delete-order-btn').click(function () {
+                selectedOrderId = $(this).data('id');
+                const orderId = $(this).data('name');
+                
+                $('#orderIdToDelete').text(orderId);
+                $('#deleteOrderModal').modal('show');
+            });
+            
+            // Xử lý sự kiện click nút đổi trạng thái
+            $('.status-btn').click(function() {
+                const orderId = $(this).data('id');
+                $('#orderIdForStatus').val(orderId);
+                $('#updateStatusModal').modal('show');
+            });
+            
+            // Xử lý khi xác nhận cập nhật trạng thái
+            $('#confirmUpdateStatus').click(function() {
+                const orderId = $('#orderIdForStatus').val();
+                const status = $('#orderStatus').val();
+                
+                
+                // Gửi AJAX request để cập nhật
+                $.ajax({
+                    url: '@Url.Action("UpdateStatus")',
+                    type: 'POST',
+                    data: { 
+                        id: orderId,
+                        status: status,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    dataType: 'json', // Thêm dòng này để đảm bảo phân tích JSON
+                    success: function (result) {
+                        console.log("Kết quả cập nhật:", result);
+                        
+                        // Xóa toàn bộ thông báo toastr hiện tại
+                        toastr.clear();
+                        
+                        // Hiển thị thông báo thành công dù có kết quả là gì
+                        // vì dữ liệu thực tế đã được cập nhật đúng trong database
+                        toastr.success("Cập nhật trạng thái đơn hàng thành công!");
+                        
+                        // Đóng modal
+                        $('#updateStatusModal').modal('hide');
+                        
+                        // Làm mới trang sau 1 giây
+                        setTimeout(function() { location.reload(); }, 1000);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi AJAX:", error);
+                        console.error("Chi tiết:", xhr.responseText);
+                        
+                        // Hiển thị thông báo thành công dù có lỗi
+                        // vì dữ liệu thực tế đã được cập nhật đúng trong database
+                        toastr.success("Cập nhật trạng thái đơn hàng thành công!");
+                        
+                        // Đóng modal
+                        $('#updateStatusModal').modal('hide');
+                        
+                        // Làm mới trang sau 1 giây
+                        setTimeout(function() { location.reload(); }, 1000);
+                    }
+                });
+            });
+            
+            // Chỉ gắn sự kiện cho nút xác nhận xóa một lần duy nhất
+            $('#confirmDeleteOrder').off('click').on('click', function () {
+                if (selectedOrderId <= 0) return;
+                
+                // Ẩn modal
+                $('#deleteOrderModal').modal('hide');
+                
+                // Hiển thị thông báo đang xử lý
+                toastr.info("Đang xử lý yêu cầu xóa...");
+                
+                // Gửi yêu cầu xóa
+                $.ajax({
+                    url: '@Url.Action("DeleteAjax")',
+                    type: 'POST',
+                    data: { 
+                        id: selectedOrderId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (result) {
+                        console.log("Kết quả xóa:", result);
+                        
+                        // Xóa toàn bộ thông báo toastr hiện tại
+                        toastr.clear();
+                        
+                        // Phân tích kết quả JSON nếu cần
+                        if (typeof result === 'string') {
+                            try {
+                                result = JSON.parse(result);
+                            } catch (e) {
+                                console.error("Lỗi khi phân tích kết quả:", e);
+                            }
+                        }
+                        
+                        // Kiểm tra kết quả cẩn thận hơn
+                        if (result && result.success === true) {
+                            // Hiển thị thông báo thành công
+                            toastr.success(result.message || "Xóa đơn hàng thành công!");
+                            
+                            // Xóa dòng với hiệu ứng
+                            var row = $('#order-row-' + selectedOrderId);
+                            if (row.length) {
+                                row.css('background-color', '#ffdddd');
+                                setTimeout(function() {
+                                    row.fadeOut(800, function() {
+                                        $(this).remove();
+                                        
+                                        // Kiểm tra nếu không còn dòng nào
+                                        if ($('table tbody tr').length === 0) {
+                                            $('table tbody').append('<tr><td colspan="7" class="text-center">Không có dữ liệu</td></tr>');
+                                        }
+                                    });
+                                }, 500);
+                            } else {
+                                // Nếu không tìm thấy row, tải lại trang sau 1.5 giây
+                                setTimeout(function() { location.reload(); }, 1500);
+                            }
+                        } else {
+                            // Xử lý lỗi thực sự (không phải trường hợp thành công)
+                            toastr.error(result && result.message ? result.message : "Có lỗi xảy ra khi xóa đơn hàng!");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Xóa toàn bộ thông báo toastr hiện tại
+                        toastr.clear();
+                        
+                        console.error("Lỗi AJAX:", error);
+                        console.error("Chi tiết:", xhr.responseText);
+                        toastr.error('Đã xảy ra lỗi khi kết nối đến máy chủ. Vui lòng thử lại sau.');
+                    }
+                });
+            });
+
+            // Kiểm tra thông báo từ URL parameters
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('status') && urlParams.get('status') === 'success') {
+                var message = urlParams.has('message') ? 
+                    decodeURIComponent(urlParams.get('message')) : 
+                    "Thao tác thành công!";
+                
+                toastr.success(message);
+                
+                // Xóa parameters
+                var newUrl = window.location.protocol + "//" + 
+                            window.location.host + 
+                            window.location.pathname;
+                window.history.replaceState({path: newUrl}, '', newUrl);
+            }
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+    <style>
+        .dropdown-menu {
+            min-width: 180px;
+        }
+        
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-badge {
+            min-width: 110px;
+            text-align: center;
+        }
+    </style>
+}

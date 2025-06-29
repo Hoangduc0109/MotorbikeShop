@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>@ViewData["Title"] - BikeShop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <!-- Cập nhật header theo mẫu -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <div>
+                        <p class="logo-text mb-0">BikeShop</p>
+                        <p class="logo-slogan mb-0">Khám phá tốc độ</p>
+                    </div>
+                </a>
+                
+                <!-- Toggle button for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" 
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <!-- Menu Items và Header Actions đã được đẩy sang phải -->
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <div class="ms-auto d-flex align-items-center">
+                        <ul class="navbar-nav me-3">
+                            <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                            </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "About" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="About" asp-action="Index">Giới thiệu</a>
+                            </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")">
+                                <a class="nav-link" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                            </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")">
+                                <a class="nav-link" asp-controller="Contact" asp-action="Index">Liên hệ</a>
+                            </li>
+                        </ul>
+                        
+                        <!-- Cart and Login Actions -->
+                        <div class="header-actions">
+                            <!-- Thêm vào Layout.cshtml để hiển thị số lượng giỏ hàng -->
+                            <a href="@Url.Action("Index", "Cart")" class="cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="cart-count">@(Context.Session.GetString("Cart") != null ? 
+                                    System.Text.Json.JsonSerializer.Deserialize<global::Motorbike.ViewModels.CartViewModel>(Context.Session.GetString("Cart"))?.TotalItems ?? 0 : 0)</span>
+                            </a>
+                            
+                            @if (Context.Session.GetString("Username") != null)
+                            {
+                                <div class="dropdown">
+                                    <a href="#" class="login-btn dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user-circle me-1"></i> @Context.Session.GetString("Username")
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                        <li><a class="dropdown-item" asp-controller="OrderHistory" asp-action="Index"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Contact" asp-action="History"><i class="fas fa-envelope me-2"></i>Lịch sử liên hệ</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login" class="login-btn">Đăng nhập</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 footer-section footer-about">
+                    <h5 class="footer-heading">Về BikeShop</h5>
+                    <p>BikeShop tự hào là đại lý phân phối chính thức các dòng xe máy chất lượng từ các thương hiệu hàng đầu thế giới như Honda, Yamaha, Suzuki, Kawasaki và nhiều hãng xe nổi tiếng khác.</p>
+                    <div class="social-links mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 footer-section footer-links">
+                    <h5 class="footer-heading">Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                        <li><a asp-controller="About" asp-action="Index">Giới thiệu</a></li>
+                        <li><a href="#">Sản phẩm</a></li>
+                        <li><a asp-controller="Contact" asp-action="Index">Liên hệ</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 footer-section footer-links">
+                    <h5 class="footer-heading">Hỗ trợ</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Bảo hành & Bảo dưỡng</a></li>
+                        <li><a href="#">Hướng dẫn mua hàng</a></li>
+                        <li><a href="#">Vận chuyển & Giao hàng</a></li>
+                        <li><a href="#">Điều khoản dịch vụ</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-6 footer-section">
+                    <h5 class="footer-heading">Liên hệ với chúng tôi</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Đường Láng, Đống Đa, Hà Nội</p>
+                    <p><i class="fas fa-phone-alt me-2"></i> 1900 1234 56</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@bikeshop.com</p>
+                    
+                    <div class="footer-newsletter">
+                        <h5>Đăng ký nhận tin</h5>
+                        <p class="text-muted">Cập nhật thông tin về sản phẩm mới và khuyến mãi</p>
+                        <form class="newsletter-form">
+                            <input type="email" placeholder="Email của bạn" required>
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p class="text-center mb-0">&copy; @DateTime.Now.Year - BikeShop - Tất cả quyền được bảo lưu</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

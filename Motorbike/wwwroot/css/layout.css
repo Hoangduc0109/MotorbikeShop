@@ -1,0 +1,422 @@
+/* CSS tùy chỉnh cho Header và Footer */
+
+:root {
+    --header-blue: #003285; /* Màu xanh đậm từ hình mẫu */
+    --header-blue-dark: #002a70;
+    --primary-color: #e63946;
+    --orange-btn: #ff7800;
+    --secondary-color: #219ebc;
+    --secondary-dark: #1a7a94;
+    --light-bg: #f7f7f9;
+    --dark-bg: #111827;
+}
+
+/* Header mới với màu xanh đậm */
+.main-header {
+    background-color: var(--header-blue);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-header .navbar-brand {
+    padding: 0.5rem 0;
+}
+
+.logo-text {
+    color: white;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 0;
+}
+
+.logo-slogan {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.7rem;
+    margin-bottom: 0;
+}
+
+.main-header .navbar-nav {
+    margin-left: 0;
+}
+
+.main-header .nav-link {
+    color: white;
+    padding: 1rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.main-header .nav-link:hover, 
+.main-header .nav-item.active .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+}
+
+/* Giỏ hàng */
+.cart-btn {
+    position: relative;
+    color: white;
+    margin-right: 15px;
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.cart-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cart-count {
+    position: absolute;
+    top: 0;
+    right: -5px;
+    background-color: var(--orange-btn);
+    color: white;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Đăng nhập */
+.login-btn {
+    background-color: var(--orange-btn);
+    border: none;
+    color: white;
+    padding: 0.4rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.login-btn:hover {
+    background-color: #e86e00;
+    color: white;
+}
+
+/* Responsive header */
+@media (max-width: 992px) {
+    .main-header .navbar-collapse {
+        background-color: var(--header-blue);
+        padding: 1rem;
+        border-radius: 0 0 0.5rem 0.5rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-header .navbar-collapse .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .main-header .navbar-nav {
+        width: 100%;
+        margin-right: 0 !important;
+        margin-bottom: 1rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Footer - giữ nguyên */
+/* ========== FOOTER STYLING ========== */
+.main-footer {
+    background: linear-gradient(135deg, #182130 0%, #111827 100%);
+    color: #f8f9fa;
+    padding: 60px 0 0;
+    position: relative;
+    overflow: hidden;
+    margin-top: 80px;
+    margin-bottom: 0; /* Đảm bảo không có margin dưới */
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.main-footer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/footer-pattern.png');
+    opacity: 0.03;
+    z-index: 0;
+}
+
+.main-footer .container {
+    position: relative;
+    z-index: 1;
+}
+
+.footer-heading {
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+.footer-heading:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+}
+
+.footer-about p {
+    line-height: 1.8;
+    color: #b0b0b0;
+}
+
+.footer-links ul {
+    padding-left: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #b0b0b0;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: block;
+    position: relative;
+    padding-left: 15px;
+}
+
+.footer-links a::before {
+    content: '\f105';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #ff6b00;
+    transition: transform 0.3s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.footer-links a:hover::before {
+    transform: translateX(3px);
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: all 0.3s;
+}
+
+.social-links a:hover {
+    background: var(--primary-color);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(230, 57, 70, 0.3);
+}
+
+.footer-newsletter {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.footer-newsletter h5 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.newsletter-form {
+    position: relative;
+}
+
+.newsletter-form input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 30px;
+    padding: 12px 50px 12px 20px;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.newsletter-form input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.15);
+}
+
+.newsletter-form button {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    border: none;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border-radius: 30px;
+    width: 40px;
+    transition: all 0.3s;
+}
+
+.newsletter-form button:hover {
+    background: linear-gradient(90deg, var(--secondary-color), var(--secondary-dark));
+    transform: scale(1.05);
+}
+
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 0;
+    margin-top: 40px;
+    margin-bottom: 0; /* Đảm bảo không có margin dưới */
+    position: relative;
+    z-index: 2;
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Responsive footer */
+@media (max-width: 768px) {
+    .main-footer {
+        padding-top: 40px;
+    }
+    
+    .footer-section {
+        margin-bottom: 30px;
+    }
+    
+    .footer-bottom {
+        margin-top: 20px;
+    }
+}
+
+/* Điều chỉnh footer để loại bỏ khoảng cách dưới cùng */
+.main-footer {
+    background: linear-gradient(135deg, #182130 0%, #111827 100%);
+    color: #f8f9fa;
+    padding: 60px 0 0;
+    position: relative;
+    overflow: hidden;
+    margin-top: 80px;
+    margin-bottom: 0; /* Đảm bảo không có margin dưới */
+}
+
+/* Đảm bảo phần cuối của footer không có padding dư thừa */
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 0;
+    margin-top: 40px;
+    margin-bottom: 0; /* Đảm bảo không có margin dưới */
+    position: relative;
+    z-index: 2;
+}
+
+/* Thêm các quy tắc để đảm bảo không còn khoảng trắng dưới footer */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.main-footer {
+    flex-shrink: 0;
+}
+
+/* Thêm vào cuối file - Dropdown menu cho user đã đăng nhập */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 10px;
+    min-width: 200px;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    color: var(--text-color);
+    transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: var(--header-blue);
+}
+
+.dropdown-divider {
+    margin: 5px 0;
+}
+
+/* Login button styles when logged in */
+.dropdown .login-btn {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown .login-btn:after {
+    margin-left: 8px;
+}

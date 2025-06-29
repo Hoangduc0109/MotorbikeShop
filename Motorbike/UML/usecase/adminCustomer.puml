@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+
+actor "Admin" as Admin
+
+rectangle "Quản lý khách hàng" {
+    usecase "Xem danh sách khách hàng" as UC_ViewCustomerList
+    usecase "Tìm kiếm khách hàng" as UC_SearchCustomer
+    usecase "Sắp xếp khách hàng" as UC_SortCustomer
+    usecase "Xem chi tiết khách hàng" as UC_ViewCustomerDetail
+    usecase "Chỉnh sửa thông tin khách hàng" as UC_EditCustomer
+    usecase "Xem đơn hàng của khách hàng" as UC_ViewCustomerOrders
+    usecase "Xem liên hệ của khách hàng" as UC_ViewCustomerContacts
+}
+
+' Các thao tác chính
+Admin --> UC_ViewCustomerList
+Admin --> UC_SearchCustomer
+Admin --> UC_SortCustomer
+
+' Từ danh sách khách hàng, admin có thể:
+UC_ViewCustomerList --> UC_ViewCustomerDetail
+UC_ViewCustomerList --> UC_EditCustomer
+UC_ViewCustomerList --> UC_ViewCustomerOrders
+UC_ViewCustomerList --> UC_ViewCustomerContacts
+
+' Khi xem chi tiết khách hàng, admin cũng có thể:
+UC_ViewCustomerDetail --> UC_EditCustomer
+UC_ViewCustomerDetail --> UC_ViewCustomerOrders
+UC_ViewCustomerDetail --> UC_ViewCustomerContacts
+
+@enduml

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BikeShop Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="admin-sidebar-brand">
+                <h2 class="admin-logo">BikeShop Admin</h2>
+                <p class="admin-tagline">Quản lý hệ thống</p>
+            </div>
+            
+            <ul class="admin-nav">
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tổng quan</span>
+                    </a>
+                </li>
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Motorbike" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Motorbike" asp-action="Index">
+                        <i class="fas fa-motorcycle"></i>
+                        <span>Quản lý xe máy</span>
+                    </a>
+                </li>
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Brand" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Brand" asp-action="Index">
+                        <i class="fas fa-tags"></i>
+                        <span>Quản lý thương hiệu</span>
+                    </a>
+                </li>
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Order" asp-action="Index">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Quản lý đơn hàng</span>
+                    </a>
+                </li>
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Customer" asp-action="Index">
+                        <i class="fas fa-users"></i>
+                        <span>Quản lý khách hàng</span>
+                    </a>
+                </li>
+                <li class="admin-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")">
+                    <a asp-area="Admin" asp-controller="Contact" asp-action="Index">
+                        <i class="fas fa-envelope"></i>
+                        <span>Quản lý liên hệ</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="admin-sidebar-footer">
+                <a asp-area="" asp-controller="Account" asp-action="Logout" class="btn btn-danger btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <div class="admin-header-user">
+                    <span class="welcome-text">Xin chào, @Context.Session.GetString("Username")</span>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" target="_blank" class="visit-site">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <!-- Thêm vào _Layout.cshtml, ngay trước đóng thẻ body -->
+    <script>
+        // Kiểm tra và hiển thị thông báo lưu trong localStorage
+        $(document).ready(function() {
+            var message = localStorage.getItem('successMessage');
+            if (message) {
+                if (typeof toastr !== 'undefined') {
+                    toastr.success(message);
+                } else {
+                    alert(message);
+                }
+                localStorage.removeItem('successMessage');
+            }
+        });
+    </script>
+</body>
+</html>

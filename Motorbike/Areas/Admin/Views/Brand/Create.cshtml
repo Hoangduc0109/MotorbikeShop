@@ -1,0 +1,164 @@
+@model global::Motorbike.Models.Brand
+
+@{
+    ViewData["Title"] = "Thêm thương hiệu mới";
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Thêm thương hiệu mới</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="BrandName" class="form-label">Tên thương hiệu</label>
+                        <input asp-for="BrandName" class="form-control" required />
+                        <span asp-validation-for="BrandName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="logoFile" class="form-label">Logo</label>
+                        <input type="file" id="logoFile" name="logoFile" class="form-control" accept="image/*" />
+                        <small class="text-muted">Chọn hình ảnh logo của thương hiệu (PNG, JPG).</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Xem trước logo</label>
+                        <div class="border p-2 text-center">
+                            <img id="logoPreview" src="/images/category/default.jpg" alt="Logo Preview" style="max-height: 100px; max-width: 100%;" />
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Lưu thương hiệu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000", 
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "escapeHtml": false
+        };
+        
+        $(document).ready(function () {
+            // Xử lý preview logo khi chọn file
+            $('#logoFile').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#logoPreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Xử lý form submit với Ajax
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                
+                var formData = new FormData(this);
+                
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json', // Chỉ định kiểu dữ liệu là JSON
+                    beforeSend: function() {
+                        console.log("Đang gửi yêu cầu...");
+                    },
+                    success: function (result) {
+                        console.log("Kết quả từ server:", result);
+                        
+                        // Chuyển đổi JSON nếu nhận được dạng string
+                        if (typeof result === 'string') {
+                            try {
+                                result = JSON.parse(result);
+                            } catch (e) {
+                                console.error("Lỗi parse JSON:", e);
+                            }
+                        }
+                        
+                        // Kiểm tra result.success dạng loose equality
+                        if (result && (result.success === true || result.success == "true")) {
+                            // Hiển thị thông báo thành công
+                            var message = result.message || "Thêm thương hiệu thành công!";
+                            console.log("Hiển thị thông báo thành công:", message);
+                            
+                            toastr.success(message);
+                            
+                            // Chuyển trang sau 1.5 giây
+                            setTimeout(function() {
+                                console.log("Chuyển hướng tới trang Index");
+                                window.location.href = '@Url.Action("Index")';
+                            }, 1500);
+                        } else {
+                            // Xử lý lỗi
+                            console.error("Đã vào nhánh lỗi với kết quả:", result);
+                            var errorMessage = (result && result.message) ? result.message : "Đã xảy ra lỗi khi xử lý yêu cầu!";
+                            toastr.error(errorMessage);
+                            
+                            // Hiển thị chi tiết lỗi nếu có
+                            if (result && result.errors) {
+                                for (var field in result.errors) {
+                                    if (Array.isArray(result.errors[field])) {
+                                        result.errors[field].forEach(function(msg) {
+                                            toastr.error(field + ": " + msg);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Lỗi AJAX:", error);
+                        console.error("Trạng thái:", status);
+                        console.error("Chi tiết phản hồi:", xhr.responseText);
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            console.error("Phản hồi lỗi đã parse:", errorResponse);
+                        } catch (e) {
+                            console.error("Không thể parse phản hồi lỗi");
+                        }
+                        toastr.error('Đã xảy ra lỗi khi kết nối đến máy chủ. Vui lòng thử lại sau.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+}

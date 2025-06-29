@@ -1,0 +1,128 @@
+@model global::Motorbike.Models.Motorbike
+
+@{
+    ViewData["Title"] = "Xóa xe máy";
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Xác nhận xóa</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="alert alert-danger mb-4">
+    <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo!</h5>
+    <p>Bạn có chắc chắn muốn xóa xe máy này? Thao tác này không thể hoàn tác.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4>@Model.MotorbikeName</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img src="~/images/products/@(string.IsNullOrEmpty(Model.Image) ? "default.jpg" : Model.Image)" 
+                             alt="@Model.MotorbikeName" class="img-fluid rounded mb-3" />
+                    </div>
+                    <div class="col-md-7">
+                        <dl class="row">
+                            <dt class="col-sm-4">ID:</dt>
+                            <dd class="col-sm-8">@Model.MotorbikeId</dd>
+
+                            <dt class="col-sm-4">Tên xe:</dt>
+                            <dd class="col-sm-8">@Model.MotorbikeName</dd>
+
+                            <dt class="col-sm-4">Thương hiệu:</dt>
+                            <dd class="col-sm-8">@Model.Brand?.BrandName</dd>
+                            
+                            <dt class="col-sm-4">Giá bán:</dt>
+                            <dd class="col-sm-8">@string.Format("{0:N0} VNĐ", Model.Price)</dd>
+                            
+                            <dt class="col-sm-4">Tồn kho:</dt>
+                            <dd class="col-sm-8">@Model.Stock</dd>
+                            
+                            <dt class="col-sm-4">Đã bán:</dt>
+                            <dd class="col-sm-8">@(Model.TotalSold ?? 0)</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <form id="deleteForm" asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="MotorbikeId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Hủy bỏ
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm JavaScript để xử lý form Delete với AJAX -->
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        
+        $(document).ready(function() {
+            $('#deleteForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var form = $(this);
+                
+                $.ajax({
+                    url: '@Url.Action("DeleteAjax", "Motorbike", new { area = "Admin" })',
+                    type: 'POST',
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(result) {
+                        console.log("Response:", result);
+                        
+                        if (result && result.success) {
+                            toastr.success(result.message || "Xóa xe máy thành công!");
+                            
+                            // Chuyển hướng sau 1 giây
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index", "Motorbike", new { area = "Admin" })';
+                            }, 1000);
+                        } else {
+                            toastr.error(result?.message || "Có lỗi xảy ra khi xóa xe máy!");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error);
+                        console.error("Response Text:", xhr.responseText);
+                        toastr.error('Đã xảy ra lỗi khi xóa xe máy: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+}

@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Gửi liên hệ" as UC_SendContact
+    usecase "Nhập thông tin liên hệ" as UC_EnterContactInfo
+    usecase "Kiểm tra hợp lệ thông tin" as UC_ValidateContact
+    usecase "Lưu liên hệ vào hệ thống" as UC_SaveContact
+    usecase "Nhận thông báo gửi thành công/thất bại" as UC_ShowContactResult
+    usecase "Xem lịch sử liên hệ" as UC_ViewContactHistory
+    usecase "Xem phản hồi từ hệ thống" as UC_ViewResponse
+}
+
+Customer --> UC_SendContact
+UC_SendContact --> UC_EnterContactInfo
+UC_SendContact --> UC_ValidateContact
+UC_ValidateContact --> UC_SaveContact : Nếu hợp lệ
+UC_ValidateContact --> UC_ShowContactResult : Nếu không hợp lệ
+UC_SaveContact --> UC_ShowContactResult
+Customer --> UC_ViewContactHistory
+UC_ViewContactHistory --> UC_ViewResponse
+
+@enduml

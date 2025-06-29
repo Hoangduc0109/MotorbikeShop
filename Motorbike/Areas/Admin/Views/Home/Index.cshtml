@@ -1,0 +1,196 @@
+@model global::Motorbike.Areas.Admin.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<div class="dashboard">
+    <h1 class="dashboard-title">Tổng quan</h1>
+    
+    <!-- Dashboard Stats -->
+    <div class="row stats-container">
+        <div class="col-md-4 mb-4">
+            <div class="stats-card orders">
+                <div class="stats-card-content">
+                    <div class="stats-card-value">@Model.TotalOrders</div>
+                    <div class="stats-card-title">Số đơn hàng</div>
+                </div>
+                <div class="stats-card-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="stats-card products">
+                <div class="stats-card-content">
+                    <div class="stats-card-value">@Model.TotalProducts</div>
+                    <div class="stats-card-title">Số sản phẩm</div>
+                </div>
+                <div class="stats-card-icon">
+                    <i class="fas fa-motorcycle"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="stats-card customers">
+                <div class="stats-card-content">
+                    <div class="stats-card-value">@Model.TotalCustomers</div>
+                    <div class="stats-card-title">Số khách hàng</div>
+                </div>
+                <div class="stats-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Orders -->
+    <div class="dashboard-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Đơn hàng gần đây</h2>
+            <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-outline-primary">Xem tất cả</a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng giá</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td>#ORD@(order.OrderId.ToString("D3"))</td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td>@String.Format("{0:N0} VNĐ", order.TotalPrice)</td>
+                            <td>
+                                @switch(order.Status)
+                                {
+                                    case "Chờ xác nhận":
+                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        break;
+                                    case "Đã xác nhận":
+                                        <span class="badge bg-primary">Đã xác nhận</span>
+                                        break;
+                                    case "Đang giao hàng":
+                                        <span class="badge bg-info">Đang giao hàng</span>
+                                        break;
+                                    case "Hoàn thành":
+                                        <span class="badge bg-success">Hoàn thành</span>
+                                        break;
+                                    case "Đã hủy":
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@order.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId" 
+                                       class="btn btn-primary btn-action-text">
+                                        <i class="fas fa-eye me-1"></i> Xem
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Order" asp-action="Edit" asp-route-id="@order.OrderId" 
+                                       class="btn btn-warning btn-action-text">
+                                        <i class="fas fa-edit me-1"></i> Sửa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.RecentOrders.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Recent Contacts -->
+    <div class="dashboard-section mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Liên hệ mới</h2>
+            <a asp-area="Admin" asp-controller="Contact" asp-action="Index" class="btn btn-outline-primary">Xem tất cả</a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Tiêu đề</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contact in Model.RecentContacts)
+                    {
+                        <tr>
+                            <td>@contact.Name</td>
+                            <td>@contact.Email</td>
+                            <td>@contact.Subject</td>
+                            <td>@contact.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @switch(contact.Status)
+                                {
+                                    case "Chưa xử lý":
+                                        <span class="badge bg-warning text-dark">Chưa xử lý</span>
+                                        break;
+                                    case "Đang xử lý":
+                                        <span class="badge bg-primary">Đang xử lý</span>
+                                        break;
+                                    case "Đã xử lý":
+                                        <span class="badge bg-success">Đã xử lý</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@contact.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="@contact.ContactId" 
+                                       class="btn btn-primary btn-action-text">
+                                        <i class="fas fa-eye me-1"></i> Xem
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Contact" asp-action="Respond" asp-route-id="@contact.ContactId" 
+                                       class="btn btn-success btn-action-text">
+                                        <i class="fas fa-reply me-1"></i> Trả lời
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.RecentContacts.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Không có liên hệ nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

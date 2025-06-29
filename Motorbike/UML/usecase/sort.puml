@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Lọc sản phẩm theo thương hiệu" as UC_FilterBrand
+    usecase "Sắp xếp sản phẩm" as UC_SortProducts
+    usecase "Chọn tiêu chí lọc/sắp xếp" as UC_SelectCriteria
+    usecase "Hiển thị danh sách sản phẩm đã lọc/sắp xếp" as UC_ShowFilteredSorted
+}
+
+Customer --> UC_FilterBrand
+Customer --> UC_SortProducts
+UC_FilterBrand --> UC_SelectCriteria
+UC_SortProducts --> UC_SelectCriteria
+UC_SelectCriteria --> UC_ShowFilteredSorted
+
+@enduml

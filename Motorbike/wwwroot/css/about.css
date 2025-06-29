@@ -1,0 +1,205 @@
+/* CSS tinh gọn cho trang Giới thiệu */
+
+/* Biến màu */
+:root {
+    --primary-color: #003285;
+    --secondary-color: #ff7800;
+    --text-color: #333;
+    --text-light: #666;
+    --light-bg: #f8f9fa;
+    --highlight-bg: rgba(0, 50, 133, 0.05);
+    --transition: all 0.3s ease;
+}
+
+/* Container chính */
+.about-container {
+    padding: 60px 0;
+    background-color: white;
+}
+
+/* Tiêu đề section */
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    position: relative;
+    padding-bottom: 15px;
+    letter-spacing: -0.5px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 60px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+}
+
+/* Text với highlight */
+.highlight-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.accent {
+    color: var(--secondary-color);
+    font-weight: 600;
+    position: relative;
+    white-space: nowrap;
+}
+
+.accent::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--secondary-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.accent:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Hiệu ứng gõ chữ */
+.typing-text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 25px 0;
+    color: var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+    overflow: hidden;
+    white-space: nowrap;
+    letter-spacing: 0.1rem;
+    padding-right: 5px;
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--primary-color) }
+}
+
+/* Hiệu ứng fade-in từng dòng */
+.fade-in-lines p {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in-lines.active p {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Nội dung text */
+.about-text p {
+    color: var(--text-light);
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+}
+
+/* Phần hình ảnh */
+.about-images {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.image-item {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.image-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.image-item img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.5s ease;
+}
+
+.image-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Animation classes */
+.reveal-element {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+}
+
+.reveal-element.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .about-images {
+        margin-top: 40px;
+    }
+    
+    .typing-text {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 40px 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .about-text,
+    .section-title {
+        text-align: center;
+    }
+    
+    .typing-text {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+}

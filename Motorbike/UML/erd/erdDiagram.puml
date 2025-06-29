@@ -1,0 +1,83 @@
+@startuml
+!define table(x) class x << (T,#FFAAAA) >>
+hide methods
+hide stereotypes
+
+' Các bảng
+table(Account) {
+  + account_id : int
+  username : nvarchar(50)
+  password : varchar(255)
+  email : nvarchar(100)
+  phone : nvarchar(20)
+  role_id : int
+  address : nvarchar(200)
+}
+
+table(UserRole) {
+  + role_id : int
+  role_name : nvarchar(50)
+}
+
+table(Contact) {
+  + contact_id : int
+  account_id : int
+  name : nvarchar(100)
+  email : nvarchar(100)
+  phone : nvarchar(20)
+  subject : nvarchar(200)
+  message : nvarchar(max)
+  created_at : datetime
+  status : nvarchar(20)
+  response : nvarchar(max)
+  response_at : datetime
+}
+
+table(MotorbikeBrand) {
+  + brand_id : int
+  brand_name : nvarchar(100)
+  logo : nvarchar(255)
+}
+
+table(Motorbike) {
+  + motorbike_id : int
+  name : nvarchar(100)
+  brand_id : int
+  price : decimal(12,2)
+  image : nvarchar(255)
+  total_sold : int
+  stock : int
+  description : nvarchar(max)
+}
+
+table(Order) {
+  + order_id : int
+  order_date : date
+  delivery_date : date
+  account_id : int
+  status : nvarchar(50)
+  address : nvarchar(255)
+  total_price : decimal(12,2)
+  payment_method : nvarchar(50)
+  created_at : datetime
+  phone : nvarchar(20)
+  customer_name : nvarchar(100)
+}
+
+table(OrderDetail) {
+  + detail_id : int
+  order_id : int
+  motorbike_id : int
+  quantity : int
+  unit_price : decimal(12,2)
+}
+
+' Các quan hệ (thể hiện rõ bằng đường nối và nhãn mô tả)
+Account }o--|| UserRole : "có vai trò"
+Contact }o--|| Account : "gửi bởi"
+Motorbike }o--|| MotorbikeBrand : "thuộc về"
+Order }o--|| Account : "đặt bởi"
+OrderDetail }o--|| Order : "chứa trong"
+OrderDetail }o--|| Motorbike : "liên kết"
+
+@enduml

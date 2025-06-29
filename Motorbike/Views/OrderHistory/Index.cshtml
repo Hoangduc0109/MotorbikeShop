@@ -1,0 +1,77 @@
+@model global::Motorbike.ViewModels.OrderHistoryViewModel
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+}
+
+<div class="container mt-5 mb-5">
+    <h1 class="order-history-header mb-4">Lịch sử đơn hàng</h1>
+
+    @if (Model.Orders.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover order-table">
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng giá</th>
+                        <th>Trạng thái</th>
+                        <th>Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr class="order-row">
+                            <td class="align-middle">
+                                <strong>@order.OrderCode</strong>
+                            </td>
+                            <td class="align-middle">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td class="align-middle">@string.Format("{0:N0}", order.TotalPrice) VND</td>
+                            <td class="align-middle">
+                                @{
+                                    string statusClass = order.Status?.ToLower() switch
+                                    {
+                                        "hoàn thành" => "status-completed",
+                                        "đang xử lý" => "status-processing",
+                                        "đã hủy" => "status-cancelled",
+                                        "đang giao" => "status-delivering",
+                                        _ => ""
+                                    };
+                                }
+                                <span class="status-badge @statusClass">@order.Status</span>
+                            </td>
+                            <td class="align-middle">
+                                <a href="@Url.Action("Details", "OrderHistory", new { id = order.OrderId })" 
+                                   class="btn btn-sm btn-outline-primary detail-btn">
+                                    <i class="fas fa-eye me-1"></i> Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state text-center py-5">
+            <div class="empty-state-icon mb-4">
+                <i class="fas fa-shopping-bag fa-5x text-muted"></i>
+            </div>
+            <h3 class="mb-3">Bạn chưa có đơn hàng nào</h3>
+            <p class="text-muted mb-4">Hãy khám phá các sản phẩm của chúng tôi và đặt hàng ngay!</p>
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-cart me-2"></i>Mua sắm ngay
+            </a>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order-history.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/order-history.js" asp-append-version="true"></script>
+}

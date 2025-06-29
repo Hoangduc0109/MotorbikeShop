@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Bắt đầu thanh toán" as UC_StartCheckout
+    usecase "Nhập thông tin giao hàng" as UC_EnterShipping
+    usecase "Chọn phương thức thanh toán" as UC_SelectPayment
+    usecase "Kiểm tra tồn kho sản phẩm" as UC_CheckStock
+    usecase "Xác nhận đơn hàng" as UC_ConfirmOrder
+    usecase "Tạo đơn hàng" as UC_CreateOrder
+    usecase "Hiển thị thông báo thành công/thất bại" as UC_ShowResult
+  
+}
+
+Customer --> UC_StartCheckout
+UC_StartCheckout --> UC_EnterShipping
+UC_EnterShipping --> UC_SelectPayment
+UC_SelectPayment --> UC_CheckStock
+UC_CheckStock --> UC_ConfirmOrder : Nếu đủ hàng
+UC_CheckStock --> UC_ShowResult : Nếu hết hàng
+UC_ConfirmOrder --> UC_CreateOrder
+UC_CreateOrder --> UC_ShowResult
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+
+actor "Khách hàng" as Customer
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Xem lịch sử đơn hàng" as UC_ViewOrderHistory
+    usecase "Xem chi tiết đơn hàng" as UC_ViewOrderDetail
+    usecase "Xem trạng thái đơn hàng" as UC_ViewOrderStatus
+    usecase "Xem danh sách sản phẩm trong đơn" as UC_ViewOrderItems
+    usecase "Xem tổng tiền đơn hàng" as UC_ViewOrderTotal
+    usecase "Xem thông tin giao hàng" as UC_ViewShippingInfo
+    usecase "Xem phương thức thanh toán" as UC_ViewPaymentMethod
+}
+
+Customer --> UC_ViewOrderHistory
+UC_ViewOrderHistory --> UC_ViewOrderDetail
+UC_ViewOrderDetail --> UC_ViewOrderStatus
+UC_ViewOrderDetail --> UC_ViewOrderItems
+UC_ViewOrderDetail --> UC_ViewOrderTotal
+UC_ViewOrderDetail --> UC_ViewShippingInfo
+UC_ViewOrderDetail --> UC_ViewPaymentMethod
+
+@enduml

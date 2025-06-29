@@ -1,0 +1,15 @@
+@startuml
+actor "Người dùng" as User
+participant "Product/Details.cshtml (View)" as View
+participant "ProductController" as Controller
+participant "Motorbike (Model)" as Model
+
+User -> View : Nhấn "Xem chi tiết" sản phẩm
+View -> Controller : Gửi yêu cầu (GET /Product/Details/{id})
+Controller -> Model : Lấy thông tin sản phẩm theo id
+Controller -> Model : Lấy danh sách sản phẩm liên quan (cùng thương hiệu)
+Model --> Controller : Trả về sản phẩm và sản phẩm liên quan
+Controller -> View : Trả về dữ liệu chi tiết sản phẩm
+View -> User : Hiển thị thông tin chi tiết và sản phẩm liên quan
+
+@enduml

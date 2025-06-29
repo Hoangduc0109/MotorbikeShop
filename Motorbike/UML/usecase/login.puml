@@ -1,0 +1,21 @@
+@startuml
+
+left to right direction
+
+actor "Khách hàng" as Customer
+actor "Admin" as Admin
+
+rectangle "Hệ thống Motorbike" {
+    usecase "Đăng nhập"
+    usecase "Kiểm tra tài khoản"
+    usecase "Chuyển hướng theo vai trò"
+    usecase "Hiển thị lỗi đăng nhập"
+}
+
+Customer --> "Đăng nhập"
+Admin --> "Đăng nhập"
+"Đăng nhập" --> "Kiểm tra tài khoản"
+"Kiểm tra tài khoản" --> "Chuyển hướng theo vai trò" : Nếu hợp lệ
+"Kiểm tra tài khoản" --> "Hiển thị lỗi đăng nhập" : Nếu không hợp lệ
+
+@enduml

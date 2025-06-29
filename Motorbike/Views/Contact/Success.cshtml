@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Gửi liên hệ thành công";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card text-center shadow p-5">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle text-success fa-5x"></i>
+                </div>
+                <h2 class="fw-bold mb-3">@TempData["SuccessMessage"]</h2>
+                <p class="text-muted mb-4">
+                    Chúng tôi đã nhận được tin nhắn của bạn và sẽ phản hồi sớm nhất có thể.
+                    Thông thường, thời gian phản hồi trong vòng 24 giờ làm việc.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Quay về trang chủ
+                    </a>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-motorcycle me-2"></i>Xem các sản phẩm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

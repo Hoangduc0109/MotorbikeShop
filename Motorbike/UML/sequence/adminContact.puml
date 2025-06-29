@@ -1,0 +1,47 @@
+@startuml
+actor "Admin" as AdminUser
+participant "Contact/Index.cshtml (View)" as View
+participant "ContactController" as Controller
+participant "Contact (Model)" as Model
+
+== Xem danh sách liên hệ ==
+AdminUser -> View : Truy cập trang quản lý liên hệ
+View -> Controller : Gửi yêu cầu GET Index (có thể kèm filter/search)
+Controller -> Model : Lấy danh sách liên hệ theo điều kiện
+Model --> Controller : Trả về danh sách liên hệ
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị danh sách liên hệ
+
+== Xem chi tiết liên hệ ==
+AdminUser -> View : Nhấn "Xem chi tiết"
+View -> Controller : GET Details(id)
+Controller -> Model : Lấy thông tin liên hệ, tài khoản gửi
+Model --> Controller : Trả về dữ liệu chi tiết liên hệ
+Controller -> View : Trả về dữ liệu cho View
+View -> AdminUser : Hiển thị chi tiết liên hệ
+
+== Phản hồi liên hệ ==
+AdminUser -> View : Nhấn "Phản hồi", nhập nội dung, gửi form
+View -> Controller : POST Respond(id, ContactResponseViewModel)
+Controller -> Model : Cập nhật phản hồi, trạng thái, thời gian phản hồi
+Model --> Controller : Trả về kết quả lưu phản hồi
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật giao diện
+
+== Cập nhật trạng thái liên hệ ==
+AdminUser -> View : Nhấn "Cập nhật trạng thái", chọn trạng thái, gửi AJAX
+View -> Controller : POST UpdateStatus(id, status)
+Controller -> Model : Cập nhật trạng thái liên hệ
+Model --> Controller : Trả về kết quả cập nhật
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật giao diện
+
+== Xóa liên hệ ==
+AdminUser -> View : Nhấn "Xóa", xác nhận xóa, gửi AJAX
+View -> Controller : POST Delete(id)
+Controller -> Model : Xóa liên hệ khỏi DB
+Model --> Controller : Trả về kết quả xóa
+Controller -> View : Trả về thông báo thành công/thất bại
+View -> AdminUser : Hiển thị thông báo, cập nhật giao diện
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+actor "Người dùng" as User
+participant "Login.cshtml (View)" as View
+participant "AccountController" as Controller
+participant "Account (Model)" as Model
+
+User -> View : Nhập tên đăng nhập, mật khẩu
+View -> Controller : Gửi thông tin đăng nhập
+Controller -> Model : Kiểm tra tài khoản, mật khẩu
+alt Đăng nhập thành công
+    Controller -> View : Chuyển hướng trang chủ/Quản trị
+else Đăng nhập thất bại
+    Controller -> View : Hiển thị lỗi đăng nhập
+end
+@enduml

@@ -1,0 +1,145 @@
+@model global::Motorbike.Models.Order
+
+@{
+    ViewData["Title"] = "Xóa đơn hàng #" + Model.OrderId;
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var requestToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<div class="admin-content-header d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Xóa đơn hàng #@Model.OrderId</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Bạn có chắc chắn muốn xóa đơn hàng này?</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Cảnh báo:</strong> Hành động này không thể khôi phục. Tất cả dữ liệu liên quan đến đơn hàng này sẽ bị xóa vĩnh viễn.
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Mã đơn hàng</h6>
+                        <p class="fw-bold">#@Model.OrderId</p>
+                        
+                        <h6 class="text-muted">Ngày đặt hàng</h6>
+                        <p>@Model.OrderDate.ToString("dd/MM/yyyy")</p>
+                        
+                        <h6 class="text-muted">Trạng thái</h6>
+                        <p>
+                            @switch (Model.Status)
+                            {
+                                case "Chờ xác nhận":
+                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    break;
+                                case "Đã xác nhận":
+                                    <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                    break;
+                                case "Đang giao hàng":
+                                    <span class="badge bg-primary">Đang giao hàng</span>
+                                    break;
+                                case "Đã giao hàng":
+                                    <span class="badge bg-success">Đã giao hàng</span>
+                                    break;
+                                case "Đã hủy":
+                                    <span class="badge bg-danger">Đã hủy</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">@Model.Status</span>
+                                    break;
+                            }
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Khách hàng</h6>
+                        <p class="fw-bold">@Model.CustomerName</p>
+                        
+                        <h6 class="text-muted">Số điện thoại</h6>
+                        <p>@Model.Phone</p>
+                        
+                        <h6 class="text-muted">Tổng tiền</h6>
+                        <p class="fw-bold text-danger">@string.Format("{0:N0} đ", Model.TotalPrice)</p>
+                    </div>
+                </div>
+                
+                <form id="deleteForm" asp-action="Delete">
+                    <input type="hidden" name="__RequestVerificationToken" value="@requestToken" />
+                    <input type="hidden" asp-for="OrderId" />
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa đơn hàng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "2000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        
+        $(document).ready(function() {
+            $('#deleteForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var form = $(this);
+                
+                
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(result) {
+                        if (result && result.success) {
+                            toastr.success(result.message || "Xóa đơn hàng thành công!");
+                            
+                            // Chuyển hướng sau 1 giây
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index")';
+                            }, 1000);
+                        } else {
+                            toastr.error(result?.message || "Có lỗi xảy ra khi xóa đơn hàng!");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Lỗi:", xhr.responseText);
+                        toastr.error('Đã xảy ra lỗi khi xóa đơn hàng.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+}

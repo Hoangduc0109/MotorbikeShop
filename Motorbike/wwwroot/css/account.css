@@ -1,0 +1,96 @@
+/* CSS cho trang đăng nhập và đăng ký */
+:root {
+    --primary-color: #003285;
+    --secondary-color: #ff7800;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    --hover-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+body {
+    background-color: var(--light-bg);
+}
+
+.auth-form {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.auth-form:hover {
+    box-shadow: var(--hover-shadow);
+}
+
+.auth-title {
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.form-control {
+    height: 46px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 50, 133, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    height: 46px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #002a70;
+    border-color: #002a70;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 50, 133, 0.3);
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #e86e00;
+    text-decoration: underline;
+}
+
+.text-danger {
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .auth-form {
+        padding: 20px;
+    }
+    
+    .auth-title {
+        font-size: 1.8rem;
+    }
+}

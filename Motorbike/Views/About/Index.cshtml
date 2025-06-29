@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Giới thiệu";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
+}
+
+<div class="about-container">
+    <div class="container">
+        <!-- Phần giới thiệu -->
+        <div class="row">
+            <div class="col-lg-6">
+                <h1 class="section-title text-gradient reveal-element">Về chúng tôi</h1>
+                
+                <div class="about-text reveal-element">
+                    <p class="highlight-text">BikeShop là <span class="accent">cửa hàng chuyên nghiệp</span> cung cấp các loại xe máy và phụ kiện chất lượng cao, mang đến trải nghiệm mua sắm tuyệt vời cho khách hàng. Với hơn <span class="accent">10 năm kinh nghiệm</span>, chúng tôi tự hào là đối tác tin cậy của các thương hiệu hàng đầu như Honda, Yamaha, và Suzuki.</p>
+                
+                    <div class="animated-text typing-text" id="typingText">Đam mê, chất lượng và uy tín là kim chỉ nam</div>
+                
+                    <p class="mt-4 fade-in-lines">Thành lập từ năm 2013, BikeShop đã không ngừng phát triển và khẳng định vị thế trên thị trường xe máy Việt Nam. Chúng tôi tự hào vận hành chuỗi showroom hiện đại tại các thành phố lớn, mang đến không gian trải nghiệm đẳng cấp và dịch vụ chuyên nghiệp.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-images">
+                    <div class="image-item reveal-element" data-delay="100">
+                        <img src="/images/about/showroom.jpg" alt="BikeShop Showroom" class="img-fluid rounded">
+                    </div>
+                    <div class="image-item reveal-element" data-delay="300">
+                        <img src="/images/about/service.jpg" alt="BikeShop Service" class="img-fluid rounded">
+                    </div>
+                    <div class="image-item reveal-element" data-delay="500">
+                        <img src="/images/about/team.jpg" alt="BikeShop Team" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/about.js" asp-append-version="true"></script>
+}

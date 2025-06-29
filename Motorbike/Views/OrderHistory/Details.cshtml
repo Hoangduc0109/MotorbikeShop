@@ -1,0 +1,205 @@
+@model global::Motorbike.ViewModels.OrderDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="mb-4 back-button-container">
+        <a href="@Url.Action("Index", "OrderHistory")" class="btn btn-outline-secondary back-button">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="order-detail-card mb-4">
+        <div class="order-detail-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">Đơn hàng @Model.OrderCode</h2>
+                <span class="badge rounded-pill @(Model.StatusClass.Replace("text-", "bg-"))">@Model.Status</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row info-section">
+                <div class="col-md-6">
+                    <div class="info-item">
+                        <i class="far fa-calendar-alt text-primary me-2"></i>
+                        <strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                    <div class="info-item">
+                        <i class="far fa-user text-primary me-2"></i>
+                        <strong>Khách hàng:</strong> @Model.CustomerName
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt text-primary me-2"></i>
+                        <strong>Số điện thoại:</strong> @Model.Phone
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        <strong>Địa chỉ:</strong> @Model.Address
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-credit-card text-primary me-2"></i>
+                        <strong>Phương thức thanh toán:</strong> @Model.PaymentMethod
+                    </div>
+                    @if (Model.DeliveryDate.HasValue)
+                    {
+                        <div class="info-item">
+                            <i class="fas fa-truck text-primary me-2"></i>
+                            <strong>Ngày giao hàng:</strong> @Model.DeliveryDate.Value.ToString("dd/MM/yyyy")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-detail-card">
+        <div class="order-detail-header">
+            <h3 class="h5 mb-0">Chi tiết sản phẩm</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0 product-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr class="product-item">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-image-container me-3">
+                                            <img src="~/images/products/@(string.IsNullOrEmpty(item.Image) ? "default.jpg" : item.Image)" 
+                                                alt="@item.MotorbikeName" class="product-image">
+                                        </div>
+                                        <div class="product-info">
+                                            <div class="product-name fw-bold">@item.MotorbikeName</div>
+                                            <div class="product-id text-muted small">Mã SP: MB-@item.MotorbikeId</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span class="quantity-badge">@item.Quantity</span>
+                                </td>
+                                <td class="text-end align-middle">@string.Format("{0:N0}", item.UnitPrice) VND</td>
+                                <td class="text-end align-middle">
+                                    <strong>@string.Format("{0:N0}", item.TotalPrice) VND</strong>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr class="total-row">
+                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                            <td class="text-end"><strong class="total-price">@string.Format("{0:N0}", Model.TotalPrice) VND</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order-history.css" asp-append-version="true" />
+    <style>
+        .info-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .product-info {
+            transition: all 0.3s ease;
+        }
+        
+        .product-item:hover .product-info {
+            transform: translateX(5px);
+        }
+        
+        .quantity-badge {
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .product-item:hover .quantity-badge {
+            background-color: #004aad;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .total-price {
+            color: #004aad;
+            font-size: 1.2em;
+        }
+        
+        .product-image-container {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hiệu ứng cho ảnh sản phẩm
+            const productImages = document.querySelectorAll('.product-image');
+            productImages.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                });
+                
+                img.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Hiệu ứng cho badge trạng thái
+            const statusBadge = document.querySelector('.badge.rounded-pill');
+            if (statusBadge) {
+                setInterval(() => {
+                    statusBadge.classList.add('animate__animated', 'animate__pulse');
+                    setTimeout(() => {
+                        statusBadge.classList.remove('animate__animated', 'animate__pulse');
+                    }, 1000);
+                }, 3000);
+            }
+            
+            // Highlight hàng khi hover
+            const productItems = document.querySelectorAll('.product-item');
+            productItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = 'rgba(0, 74, 173, 0.05)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                });
+            });
+        });
+    </script>
+}
